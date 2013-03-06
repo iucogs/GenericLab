@@ -384,6 +384,13 @@ public class GenLab extends JApplet implements ComponentListener {
 		runP.addComponentListener(this);
 		resultsP = new ResultsPanel();
 
+		JPanel testFirsty = new JPanel();
+		testFirsty.setBackground(Color.cyan);
+		addInstructions(testFirsty, "homestar.jpg");
+		tabbedPane.addTab("Welcome", testFirsty);
+
+		tabbedPane.addTab("Instructions", instruct1Panel);
+		
 		tabbedPane.addTab("Instructions", instruct1Panel);
 		tabbedPane.addTab("Create Trials", null, trialVarsP,
 				"Set trial details and create a script file");
@@ -397,7 +404,7 @@ public class GenLab extends JApplet implements ComponentListener {
 			public void stateChanged(ChangeEvent changeEvent) {
 				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
 				int index = tabbedPane.getSelectedIndex();
-				if (index == 4) {
+				if (index == 5) {
 					getAndSetVariables();
 				}
 			}
