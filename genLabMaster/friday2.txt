@@ -1,0 +1,19 @@
+instructions instructions.txt
+5
+
+1 a abstract
+word justice2 is an abstract word so press "a" center 0
+
+1 d instructions
+word press2 any key to begin the experiment center 0
+
+1 c concrete
+word carrot2 is a concrete word so press "c" center 0
+
+1 c concrete
+word piano2 is a concrete word so press "c" center 0
+
+1 a abstract
+word protect2 is an abstract word so press "a" center 0
+
+

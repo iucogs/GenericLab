@@ -1,0 +1,6 @@
+<ASX Version = "3.0">
+   <ENTRY>
+      <REF HREF = "mms://146.6.71.200:1755/web/video/examples/wm/interview_3.wmv"/>
+      <REF HREF = "http://146.6.71.200:8080/web/video/examples/wm/interview_3.wmv"/>
+   </ENTRY>
+</ASX>

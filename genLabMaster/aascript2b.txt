@@ -1,0 +1,23 @@
+instructions instructions.txt
+
+5
+2 y picture
+word image position 30 30 3.0
+word sound position 30 30 3.0
+
+2 y sound
+video bailey.mpg random 3.0
+picture picture64b.gif random 3.0
+
+2 y sound
+word image3 center 3.0
+word sound3 center 3.0
+
+2 y sound
+word melt center 3.0
+video melt.mpg random 3.0
+
+2 y sound
+picture turtle.jpg random 3.0
+video bailey.mpg random 3.0
+

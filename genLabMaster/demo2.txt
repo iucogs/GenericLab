@@ -1,0 +1,16 @@
+instructions sampleinstructions.txt
+5
+1 h hello
+sound hello.aiff
+
+1 g goodbye
+sound goodbye
+
+1 h strong
+picture strong.jpg center 0
+
+1 g homestar
+picture homestar.jpg center 0
+
+1 g hello
+video movie01.avi center 1.0

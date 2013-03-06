@@ -1,0 +1,18 @@
+5
+
+1 a abstract
+word justice is an abstract word so press "a" center 0
+
+1 * instructions
+word press any key to begin the experiment center 0
+
+1 c concrete
+word carrot is a concrete word so press "c" center 0
+
+1 c concrete
+word piano is a concrete word so press "c" center 0
+
+1 a abstract
+word protect is an abstract word so press "a" center 0
+
+
