@@ -1,5 +1,6 @@
 instructions sampleinstructions.txt
 5
+
 1 h hello
 sound hello.aiff
 
@@ -10,7 +11,7 @@ sound goodbye
 picture strong.jpg center 0
 
 1 g homestar
-picture homestar.jpg position 100 150 0
+picture homestar.jpg center 0
 
-1 g hello
-video movie01.avi center 0
+1 g hellody
+word Currently No Video, This is a Word center 0

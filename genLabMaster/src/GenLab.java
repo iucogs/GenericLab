@@ -23,6 +23,8 @@ import javax.sound.sampled.*;
 import display.Display;
 import display.Display.DisplayType;
 import display.Display.PositionType;
+import experiment.Block;
+import experiment.Experiment;
 import experiment.Trial;
 
 //import javax.media.bean.playerbean.MediaPlayer;
@@ -64,7 +66,8 @@ public class GenLab extends JApplet implements ComponentListener {
 	double startRxnTimeMeasure = 0, stopRxnTimeMeasure = 0, rxnTime = 0;
 	double tempstart, tempstop, temptime;
 
-	Vector vectorOfTrials;
+	Vector vectorOfTrialsz;
+	ArrayList<Trial> trials;
 	Vector vct;
 	Vector vectorOfUsableKeys, vectorOfTrialTypes;
 	Vector userResponsesVector = new Vector();
@@ -102,7 +105,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		getContentPane().add(tabbedPane);
 		// pack();
 
-		vectorOfTrials = new Vector();
+		trials = new ArrayList<Trial>();
 		runP.presPan.videoPanVector = new Vector();
 		runP.presPan.mediaPlayerVector = new Vector();
 		runP.presPan.videoNameVector = new Vector();
@@ -289,13 +292,13 @@ public class GenLab extends JApplet implements ComponentListener {
 		timer1b.stop();
 		runP.presPan.clearMediaPlayer();
 		if ((displayCtr >= oneTrialVector.size())
-				&& (trialCtr < vectorOfTrials.size())) {
+				&& (trialCtr < trials.size())) {
 			trialCtr++;
 			displayCtr = 0;
 			runP.presPan.clearVector();
 		}
 
-		if (trialCtr >= vectorOfTrials.size()) {
+		if (trialCtr >= trials.size()) {
 			printResults();
 			runP.promptJL.setText("Experiment Over");
 			if (!scriptInstructions.equals("")) {
@@ -384,10 +387,8 @@ public class GenLab extends JApplet implements ComponentListener {
 		runP.addComponentListener(this);
 		resultsP = new ResultsPanel();
 
-		JPanel testFirsty = new JPanel();
-		testFirsty.setBackground(Color.cyan);
-		addInstructions(testFirsty, "homestar.jpg");
-		tabbedPane.addTab("Welcome", testFirsty);
+		JPanel introPanel = new IntroPanel(tabbedPane);
+		tabbedPane.addTab("Welcome", introPanel);
 
 		tabbedPane.addTab("Instructions", instruct1Panel);
 		
@@ -404,8 +405,18 @@ public class GenLab extends JApplet implements ComponentListener {
 			public void stateChanged(ChangeEvent changeEvent) {
 				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
 				int index = tabbedPane.getSelectedIndex();
-				if (index == 5) {
+				switch(index){
+					case 5:
 					getAndSetVariables();
+					tabbedPane.setEnabledAt(6,true);
+					break;
+					default:
+					break;
+				}
+				//TODO: Change the Results Pane disabling to be smarter-
+				// Only enable it after an experiment has started, and then leave it enabled.
+				if(index != 5 && index != 6){
+					tabbedPane.setEnabledAt(6,false);
 				}
 			}
 		};
@@ -540,6 +551,14 @@ public class GenLab extends JApplet implements ComponentListener {
 	// Parse script
 	// ===================================================
 
+	/**
+	 * Parses in the script.  Does two main things:
+	 * 		-populates the list of trials
+	 * 		-sets up RunP's key listeners
+	 * 		-sets up RUnP's instructions button
+	 * 
+	 * Called from GetAndSetVariables.
+	 */
 	private int parseScript() {
 
 		String scriptString, trialString;
@@ -554,7 +573,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		// specifics
 		// ...
 		//
-		vectorOfTrials.removeAllElements();
+		trials.clear();
 		runP.presPan.mediaPlayerVector.removeAllElements();
 		runP.presPan.videoNameVector.removeAllElements();
 		runP.presPan.videoPanCtr = 0;
@@ -562,12 +581,22 @@ public class GenLab extends JApplet implements ComponentListener {
 		scriptString = "";
 		trialString = "";
 		instructionsFilename = "";
-
+		
+		// START HERE
+		// Get characters to first white space and parseInt --> Num displays
+		// cerate new vector and put in first slot
+		// Get next character after whitesepace, check that is only one
+		// before next whitespace --> response key
+		// Get rest substring after whitespace and delete white space at end
+		// (if any) --> category
+		// read in as many lines as there are displays separately or read to
+		// blank line
+		// repeat above for number of trials
 		String tempDebugString = "";
 		try {
 			File scriptFile = new File(script);
 			BufferedReader br = new BufferedReader(new FileReader(scriptFile)); 
-			//TODO: Change reader for applet?
+			//TODO: Change reader for applet?  Seems OK for now!.
 			scriptString = br.readLine();
 			if (scriptString.startsWith("instructions")) {
 				String[] temp = scriptString.split(" ", 2);
@@ -759,19 +788,10 @@ public class GenLab extends JApplet implements ComponentListener {
 					displays[i] = disp;
 				}
 				Trial oneTrial = new Trial(correctKeyString,trialType,displays);
-				vectorOfTrials.addElement(oneTrial);
+				trials.add(oneTrial);
 			}
 
-			// START HERE
-			// Get characters to first white space and parseInt --> Num displays
-			// cerate new vector and put in first slot
-			// Get next character after whitesepace, check that is only one
-			// before next whitespace --> response key
-			// Get rest substring after whitespace and delete white space at end
-			// (if any) --> category
-			// read in as many lines as there are displays separately or read to
-			// blank line
-			// repeat above for number of trials
+
 
 		} catch (FileNotFoundException fnfe) {
 			JOptionPane.showMessageDialog(this, "File not found error:  "
@@ -781,25 +801,64 @@ public class GenLab extends JApplet implements ComponentListener {
 			JOptionPane.showMessageDialog(this, "Error reading from file:  "
 					+ ioe, "File error", JOptionPane.ERROR_MESSAGE);
 		}
-
+		
+		//Replicate each trial based on reps number
 		if (reps > 1) {
-			Vector cloneOfOriginalVectorOfTrials = (Vector) vectorOfTrials
-					.clone();
-
-			for (int i = 1; i <= reps - 1; i++) {
-				for (int j = 0; j < cloneOfOriginalVectorOfTrials.size(); j++) {
-					vectorOfTrials
-							.addElement((Trial) cloneOfOriginalVectorOfTrials
-									.elementAt(j));
+			int initialSize = trials.size();
+			trials.ensureCapacity(initialSize * reps);
+			for (int i = 0; i < reps - 1; i++) // each rep past 1
+			{
+				for (int j = 0; j < initialSize; j++)
+				{
+					trials.add(trials.get(j));
 				}
 			}
-
+		}
+		// reorder trial vector if necessary
+		if (randomTrialOrder) {
+			java.util.Collections.shuffle(trials);
 		}
 
+		if (randomDisplayOrder) {
+			for (int i = 0; i < trials.size(); i++) {
+				Trial trial = (Trial) trials.get(i);
+				Collections.shuffle(trial.displays);
+			}
+		}
+		// JOptionPane.showMessageDialog(this, "test");
+		scriptInstructions = "";
+		if (!instructionsFilename.equals("")) {
+			String instructionsString = "";
+			try {
+
+				String instructionsPathPlusFilename = exptVarsP.scriptDirectory
+						+ "\\" + instructionsFilename;
+				File scriptFile = new File(instructionsPathPlusFilename);
+				BufferedReader br = new BufferedReader(new FileReader(
+						scriptFile));
+
+				while ((instructionsString = br.readLine()) != null) {
+					scriptInstructions = scriptInstructions + "\n"
+							+ instructionsString;
+				}
+			} catch (FileNotFoundException fnfe) {
+				// JOptionPane.showMessageDialog(this, "File not found error:  "
+				// + fnfe, "File error", JOptionPane.ERROR_MESSAGE);
+				System.out.println("trying to read file  " + fnfe);
+			} catch (IOException ioe) {
+				// JOptionPane.showMessageDialog(this,
+				// "Error reading from file:  " + ioe, "File error",
+				// JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		
 		// AFTER FILE PARSED
 		// once script data in vector...run experiment number-of-repetitions
 		// times
-
+		
+		
+		//Run Panel Setup
+		
 		runP.getInputMap().clear();
 		runP.getActionMap().clear();
 		runP.presPan.videoPanCtr = 0;
@@ -831,24 +890,289 @@ public class GenLab extends JApplet implements ComponentListener {
 				runP.getActionMap().put("doKeyAction", keyAction);
 			}
 		}
+		runP.promptJL.setText("");
+		if (scriptInstructions.equals("")) {
+			runP.instructionsJB.setVisible(false);
+		} else {
+			runP.instructionsJB.setVisible(true);
+		}
 
+		return (1);
+	}
+
+	// ===================================================
+	// Run experiment -- THIS NEEDS TO BE DONE
+	// ===================================================
+
+	private int parseScript2(){
+		String scriptString, trialString;
+		int numTrials = 0;
+		int numDisplays = 0;
+		String trialType = "", correctKeyString = "";
+
+		vectorOfUsableKeys = new Vector();
+		vectorOfTrialTypes = new Vector();
+
+		// steps for parsing script into vector of vectors containing trial
+		// specifics
+		// ...
+		//
+		trials.clear();
+		runP.presPan.mediaPlayerVector.removeAllElements();
+		runP.presPan.videoNameVector.removeAllElements();
+		runP.presPan.videoPanCtr = 0;
+
+		scriptString = "";
+		trialString = "";
+		instructionsFilename = "";
+		
+		// START HERE
+		// Get characters to first white space and parseInt --> Num displays
+		// cerate new vector and put in first slot
+		// Get next character after whitesepace, check that is only one
+		// before next whitespace --> response key
+		// Get rest substring after whitespace and delete white space at end
+		// (if any) --> category
+		// read in as many lines as there are displays separately or read to
+		// blank line
+		// repeat above for number of trials
+		String tempDebugString = "";
+		try {
+			File scriptFile = new File(script);
+			BufferedReader br = new BufferedReader(new FileReader(scriptFile)); 
+			//TODO: Change reader for applet?  Seems OK for now!.
+			scriptString = br.readLine();
+			if (scriptString.startsWith("instructions")) {
+				String[] temp = scriptString.split(" ", 2);
+				instructionsFilename = temp[1];
+				scriptString = br.readLine();
+				if (scriptString.trim().equals("")) {
+					scriptString = br.readLine();
+				}
+			}
+			try {
+				numTrials = Integer.parseInt(scriptString);
+
+				tempDebugString = tempDebugString + scriptString;
+
+				while ((trialString = br.readLine()) != null) {
+					tempDebugString = tempDebugString + "\n" + trialString;
+				}
+
+			} catch (NumberFormatException nfe) {
+				JOptionPane.showMessageDialog(this,
+						"Number of trials must be an integer >= 0",
+						"Variable error", JOptionPane.ERROR_MESSAGE);
+				return (0);
+			}
+
+			if (numTrials < 0) {
+				varError(5, "");
+				return (0);
+			}
+
+			Vector tokenVector = new Vector();
+			String[] results = tempDebugString.split("\\s");
+			String tempString = "";
+			for (int x = 0; x < results.length; x++) {
+				tempString = results[x].trim();
+				if (tempString.equals("")) {
+
+				} else {
+					tokenVector.addElement(tempString);
+				}
+			}
+
+			int tokenCtr = 0;
+
+			numTrials = Integer.parseInt((String) tokenVector
+					.elementAt(tokenCtr++));
+
+			for (int j = 0; j < numTrials; j++) {
+
+				numDisplays = Integer.parseInt((String) tokenVector
+						.elementAt(tokenCtr++));
+
+				if (tokenVector.elementAt(tokenCtr).equals("#")) {
+					includeAllNumbers = true;
+				} else if (tokenVector.elementAt(tokenCtr).equals("*")) {
+					includeAllLetters = true;
+				}
+
+				correctKeyString = (String) tokenVector.elementAt(tokenCtr++);
+
+				if (!vectorOfUsableKeys.contains(correctKeyString)) {
+					vectorOfUsableKeys.addElement(correctKeyString);
+				}
+
+				trialType = (String) tokenVector.elementAt(tokenCtr++);
+
+				if (!vectorOfTrialTypes.contains(trialType)) {
+					vectorOfTrialTypes.addElement(trialType);
+				}
+
+				Display[] displays = new Display[numDisplays];
+				//- Load in each Display -//
+				for (int i = 0; i < numDisplays; i++) {
+
+					String stimulusTypeStr = (String) tokenVector.elementAt(tokenCtr++);
+					DisplayType displayType = DisplayType.getValueOf(stimulusTypeStr.toUpperCase());
+					double duration = 1;
+					String textOrPath = "NOT-YET-SET";
+					String thePosition = "CENTER";
+					
+					switch(displayType)
+					{
+						case TEXT:
+							boolean foundPosition = false;
+							textOrPath = "";
+							System.out.println("Loading Text!");
+							while (!foundPosition) {
+								int tempCtr = 0;
+								String tempString2 = (String) tokenVector.elementAt(tokenCtr++);
+	
+								if ((tempString2.equals("position"))
+										|| (tempString2.equals("center"))
+									 	|| (tempString2.equals("random"))) {
+									foundPosition = true;
+									tokenCtr--;
+								} else {
+									textOrPath = textOrPath + " " + tempString2;
+									tempCtr++;
+									if (tempCtr > 10) {
+										foundPosition = true;
+									}
+								}
+	
+							}
+							textOrPath = textOrPath.trim();
+							break;
+						case IMAGE:
+							textOrPath = directoryString + (String) tokenVector.elementAt(tokenCtr++);
+							Image tempImg = Toolkit.getDefaultToolkit().getImage(textOrPath);
+	
+							try {
+								MediaTracker tracker = new MediaTracker(this);
+								tracker.addImage(tempImg, 0);
+								tracker.waitForID(0);
+	
+								int tempWidth = tempImg.getWidth(this);
+								int tempHeight = tempImg.getHeight(this);
+	
+								if ((tempWidth <= 0) || (tempHeight <= 0)) {
+									varError(8, textOrPath);
+									return (0);
+								}
+								// TODO: Clean up these comments
+								// if (tempWidth > horiz) {
+								// varError(6, itemPresented);
+								// return(0);
+								// }
+								//
+								// if (tempHeight > vert) {
+								// varError(7, itemPresented);
+								// return(0);
+								// }
+							} catch (Exception e) {e.printStackTrace();}
+							break;
+						case VIDEO: 
+							textOrPath = (String) tokenVector.elementAt(tokenCtr++);
+	
+							int tempIndex = runP.presPan.videoNameVector.indexOf(textOrPath);
+							if (tempIndex == -1) {
+								runP.presPan.videoNameVector.addElement(textOrPath);
+								runP.presPan.prepVideo(directoryString + textOrPath);
+							}
+							break;
+						case SOUND:
+							textOrPath = "" + audioClipVector.size();
+							String soundFilePath = directoryString
+									+ (String) tokenVector.elementAt(tokenCtr++);
+	
+							Clip theClip = loadAudioClip(soundFilePath);
+							if (theClip == null) {
+								varError(9, soundFilePath);
+								return (0);
+							}
+							duration = theClip.getMicrosecondLength() / 1000000.0;
+							audioClipVector.addElement(theClip);
+							break;
+					}//End Switch
+					
+					//Set Duration and Position for non-sounds
+					if (!displayType.equals(DisplayType.SOUND))
+					{
+						thePosition = (String) tokenVector.elementAt(tokenCtr++);
+					// THis is implied
+					//	thePosition = (String) tokenVector
+					//	.elementAt(tokenCtr - 1);
+
+						if (thePosition.equals("position")) {
+							hPosition = Integer.parseInt((String) tokenVector
+									.elementAt(tokenCtr++));
+							vPosition = Integer.parseInt((String) tokenVector
+									.elementAt(tokenCtr++));
+						}
+						//TODO: 1. fix 'thePosition' type. 2. cases for other PositionTypes
+						String tempString3 = (String) tokenVector
+								.elementAt(tokenCtr++);
+						try{
+							duration = Double.parseDouble(tempString3);
+						} 
+						catch (NumberFormatException nfe) {
+							System.out.println("NumberFormatException: "
+									+ nfe.getMessage());
+						}
+					}
+//					OneDisplay oneDisplay = new OneDisplay();
+//					oneDisplay.buildDisplay(stimulusType, textOrPath,
+//							thePosition, hPosition, vPosition, theDuration);
+					Display disp = new Display(displayType,PositionType.getValueOf(thePosition.toUpperCase()),textOrPath,duration);
+					disp.setPosition(hPosition,vPosition);
+					displays[i] = disp;
+				}
+				Trial oneTrial = new Trial(correctKeyString,trialType,displays);
+				trials.add(oneTrial);
+			}
+
+
+
+		} catch (FileNotFoundException fnfe) {
+			JOptionPane.showMessageDialog(this, "File not found error:  "
+					+ fnfe, "File error", JOptionPane.ERROR_MESSAGE);
+			System.out.println("trying to read file  " + fnfe);
+		} catch (IOException ioe) {
+			JOptionPane.showMessageDialog(this, "Error reading from file:  "
+					+ ioe, "File error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		//Replicate each trial based on reps number
+		if (reps > 1) {
+			int initialSize = trials.size();
+			trials.ensureCapacity(initialSize * reps);
+			for (int i = 0; i < reps - 1; i++) // each rep past 1
+			{
+				for (int j = 0; j < initialSize; j++)
+				{
+					trials.add(trials.get(j));
+				}
+			}
+		}
 		// reorder trial vector if necessary
 		if (randomTrialOrder) {
-			java.util.Collections.shuffle(vectorOfTrials);
+			java.util.Collections.shuffle(trials);
 		}
 
 		if (randomDisplayOrder) {
-			for (int i = 0; i < vectorOfTrials.size(); i++) {
-				Trial trial = (Trial) vectorOfTrials.elementAt(i);
+			for (int i = 0; i < trials.size(); i++) {
+				Trial trial = (Trial) trials.get(i);
 				Collections.shuffle(trial.displays);
 			}
 		}
-
 		// JOptionPane.showMessageDialog(this, "test");
 		scriptInstructions = "";
 		if (!instructionsFilename.equals("")) {
 			String instructionsString = "";
-
 			try {
 
 				String instructionsPathPlusFilename = exptVarsP.scriptDirectory
@@ -871,6 +1195,45 @@ public class GenLab extends JApplet implements ComponentListener {
 				// JOptionPane.ERROR_MESSAGE);
 			}
 		}
+		
+		// AFTER FILE PARSED
+		// once script data in vector...run experiment number-of-repetitions
+		// times
+		
+		
+		//Run Panel Setup
+		
+		runP.getInputMap().clear();
+		runP.getActionMap().clear();
+		runP.presPan.videoPanCtr = 0;
+		for (int i = 0; i < vectorOfUsableKeys.size(); i++) {
+
+			char c = ((String) vectorOfUsableKeys.elementAt(i)).charAt(0);
+
+			if (c == '*') {
+
+				for (int j = 0; j < arrayOfLetters.length; j++) {
+
+					runP.getInputMap().put(
+							KeyStroke.getKeyStroke(arrayOfLetters[j]),
+							"doKeyAction");
+					runP.getActionMap().put("doKeyAction", keyAction);
+				}
+
+			} else if (c == '#') {
+				for (int j = 0; j < arrayOfNumbers.length; j++) {
+					runP.getInputMap().put(
+							KeyStroke.getKeyStroke(arrayOfNumbers[j]),
+							"doKeyAction");
+					runP.getActionMap().put("doKeyAction", keyAction);
+				}
+
+			} else {
+				runP.getInputMap()
+						.put(KeyStroke.getKeyStroke(c), "doKeyAction");
+				runP.getActionMap().put("doKeyAction", keyAction);
+			}
+		}
 		runP.promptJL.setText("");
 		if (scriptInstructions.equals("")) {
 			runP.instructionsJB.setVisible(false);
@@ -878,15 +1241,94 @@ public class GenLab extends JApplet implements ComponentListener {
 			runP.instructionsJB.setVisible(true);
 		}
 
-		// runExperiment();
 		return (1);
-
 	}
+	
+	private boolean setupExperimentFromOldScript()
+	{
+		// get script name
+		Experiment ex = new Experiment();
+		Block block = new Block(); //Default Block
+		ex.blocks.add(block);
+		
+		ex.scriptFilename = exptVarsP.getScript();
+		if (ex.scriptFilename.equals("")) {
+			varError(0, "");  //TODO varError: keep this setup?
+			return false;
+		}
+		ex.scriptDirectory = exptVarsP.getScriptDirectory();
+		// get repetitions
+		int reps;
+		try {
+			block.reps = Integer.parseInt(exptVarsP.getReps());
+			reps = block.reps;
+			if (reps <= 0) {
+				varError(1, "");
+				return false;
+			}
+		} catch (NumberFormatException nfe) {
+			varError(1, "");
+			return false;
+		}
+		
+		block.randomizeTrialOrder = exptVarsP.getTrialOrder(); 
+		
+		//TODO: Finish converting this method
+		
+		randomDisplayOrder = exptVarsP.getDisplayOrder();
+		fontFace = exptVarsP.getFontFace();
+		fontSize = exptVarsP.getFontSize();
+		leaveDisplayOn = exptVarsP.getDisplayOn();
+		try {
+			horiz = Integer.parseInt(exptVarsP.getHorizRange());
+			if ((horiz <= 0) || (horiz > 390)) {
+				varError(2, "");
+				return false;
+			}
+		} catch (NumberFormatException nfe) {
+			varError(2, "");
+			return false;
+		}
 
-	// ===================================================
-	// Run experiment -- THIS NEEDS TO BE DONE
-	// ===================================================
+		try {
+			vert = Integer.parseInt(exptVarsP.getVertRange());
+			if ((vert <= 0) || (vert > 250)) {
+				varError(3, "");
+				allVarsOk = false;
+			}
+		} catch (NumberFormatException nfe) {
+			varError(3, "");
+			allVarsOk = false;
+		}
 
+		prompt = exptVarsP.getPrompt();
+		promptString = exptVarsP.getPromptString();
+		feedback = exptVarsP.getFeedback();
+		try {
+			delay = Integer.parseInt(exptVarsP.getDelay());
+			if (delay < 0) {
+				varError(4, "");
+				allVarsOk = false;
+			}
+		} catch (NumberFormatException nfe) {
+			varError(4, "");
+			allVarsOk = false;
+		}
+
+		// Parse the script!
+		int parseSuccess = parseScript();
+
+		if (allVarsOk && parseSuccess == 1) {
+			runP.startJB.setEnabled(true);
+			runP.startJB.setToolTipText("Begin the experiment.");
+
+		} else {
+			runP.startJB.setEnabled(false);
+			runP.startJB
+					.setToolTipText("Error in parsing script setup.  Check script and environment page.");
+		}
+	}
+	
 	private void runExperiment() {
 
 		runP.requestFocus();
@@ -935,7 +1377,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	public void startTimer1() {
 
-		oneTrial = (Trial) vectorOfTrials.elementAt(trialCtr);
+		oneTrial = (Trial) trials.get(trialCtr);
 
 		oneTrialVector = new Vector(oneTrial.displays);
 
@@ -948,29 +1390,6 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	}
 
-//	public void readPositionFromFile() {
-//
-//		try {
-//			if (streamTokenizer.nextToken() != StreamTokenizer.TT_EOF) {
-//				thePosition = streamTokenizer.sval;
-//
-//				if (thePosition.equals("position")) {
-//					if (streamTokenizer.nextToken() != StreamTokenizer.TT_EOF) {
-//						hPosition = (int) streamTokenizer.nval;
-//					}
-//					if (streamTokenizer.nextToken() != StreamTokenizer.TT_EOF) {
-//						vPosition = (int) streamTokenizer.nval;
-//					}
-//
-//				} else if (thePosition.equals("center")) {
-//				} else if (thePosition.equals("random")) {
-//				}
-//			}
-//		} catch (IOException ioe) {
-//			JOptionPane.showMessageDialog(this, "Error reading from file:  "
-//					+ ioe, "File error", JOptionPane.ERROR_MESSAGE);
-//		}
-//	}
 
 	public void printResults() {
 
@@ -1017,7 +1436,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 			OneResponse oneResponse = (OneResponse) userResponsesVector
 					.elementAt(i);
-			Trial oneTrial = (Trial) vectorOfTrials.elementAt(i);
+			Trial oneTrial = (Trial) trials.get(i);  //TODO: Why isn't this used?  whats happening here in general.
 
 			if (includeAllNumbers) {
 				rawDataResultsString += (int) (i + 1) + " "

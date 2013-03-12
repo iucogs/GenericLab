@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/platform.jar"/>
 	<classpathentry kind="lib" path="lib/vlcj-2.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jay/Downloads/miglayout-4.0-swing.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jay/Downloads/jackson-core-2.1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

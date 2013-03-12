@@ -3,6 +3,8 @@ package display;
 import java.awt.Dimension;
 import java.awt.Point;
 
+import experiment.Trial;
+
 
 public class Display {
 	
@@ -49,6 +51,8 @@ public class Display {
 	-Duration(ms)
 	-Persists(Default 0.  is how long in ms to keep the Display on the screen after the duration has expired, meaning the next display will be shown)
 	*/
+	public Trial parent;
+	
 	private DisplayType displayType;
 	private PositionType positionType;
 	private String textOrPath;

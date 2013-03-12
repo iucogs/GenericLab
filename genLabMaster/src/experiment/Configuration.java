@@ -21,11 +21,9 @@ public class Configuration {
 	private static Configuration defaultConfiguration;
 	//Experiment 
 	public Boolean randomizeBlockOrder;
-	public Font font; //includes size
 	public Boolean leaveDisplayOn;
 	public Point windowPosition;
 	public Dimension windowSize;
-	public Rectangle randomDisplayPositionBounds;
 	public Boolean giveFeedback;
 	public String promptString;
 
@@ -68,8 +66,6 @@ public class Configuration {
 		mergeInto(c,c1);
 		mergeInto(c,c2);
 		return c;
-	// One line version!
-	//	return Configuration.mergeInto(Configuration.mergeInto(new Configuration(), c1), c2);
 	}
 
 	public static Configuration getDefaultConfiguration(){
