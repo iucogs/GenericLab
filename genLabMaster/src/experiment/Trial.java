@@ -45,31 +45,5 @@ public class Trial implements Iterable<Display> {
 		Collections.shuffle(displaysCopy);
 		return displaysCopy.iterator();
 	}
-	
-	private class TrialIterator implements Iterator<Display>{
-		
-		LinkedList<Display> displaysCopy = new LinkedList<Display>();
-		Iterator<Display> iter;
-		public TrialIterator(){
-			Collections.copy(displays, displaysCopy);
-			Collections.shuffle(displaysCopy);
-			iter = displaysCopy.iterator();
-		}
-		
-		@Override
-		public boolean hasNext() {
-			return iter.hasNext();
-		}
 
-		@Override
-		public Display next() {
-			return iter.next();
-		}
-
-		@Override
-		public void remove() {
-			iter.remove();
-		}
-		
-	}
 }

@@ -2,6 +2,7 @@ package experiment;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,7 +20,7 @@ public class Experiment implements Iterable<Block>{
 	public String scriptFilename;
 	public String scriptDirectory;
 	
-	public List<Block> blocks;
+	public List<Block> blocks = new ArrayList<Block>(1);
 	
 	@Override
 	public Iterator<Block> iterator() {
