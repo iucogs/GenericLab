@@ -8,6 +8,11 @@ import java.awt.image.*;
 import java.awt.Color;
 import java.io.*;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.util.*;
@@ -349,14 +354,44 @@ class PresentationPanel extends JPanel {
 
 		}
 
-		public void eraseAll(){
+	public void eraseAll(){
                     repaint();
                     clearMediaPlayer();
 	}
 
+	public static Clip loadAudioClip(String filename) {
+			Clip clip = null;
+			try {
+				AudioInputStream stream = AudioSystem.getAudioInputStream(new File(
+						filename));
 
+				// At present, ALAW and ULAW encodings must be converted
+				// to PCM_SIGNED before it can be played
+				AudioFormat format = stream.getFormat();
+
+				if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+					stream = AudioSystem.getAudioInputStream(
+							AudioFormat.Encoding.PCM_SIGNED, stream);
+					format = stream.getFormat();
+				}
+
+				// Create the clip
+				DataLine.Info info = new DataLine.Info(Clip.class,
+						stream.getFormat(),
+						((int) stream.getFrameLength() * format.getFrameSize()));
+				clip = (Clip) AudioSystem.getLine(info);
+
+				// This method does not return until the audio file is completely
+				// loaded
+				clip.open(stream);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return clip;
+		}
+		
 }
-
 class PresPanelDisplay {
 	String pp_itemDisplayed = "";
 	Image pp_theImage;

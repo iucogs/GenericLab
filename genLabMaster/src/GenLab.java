@@ -1,6 +1,7 @@
 //package genlab;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -39,48 +40,38 @@ public class GenLab extends JApplet implements ComponentListener {
 	RunPanel runP;
 	ResultsPanel resultsP;
 
-	String instructions1, instructions2, scriptInstructions = "";
-	String instructionsFilename = "";
+	String instructionsScreen1Path, instructionsScreen2Path;
 
 	Timer timer1a; // Shows next display, starts 1b
 	Timer timer1b; // Clears away latest display
 	Timer timer2a; // Displays feedback, starts 2b
 	Timer timer2b; //
-	// Action KeyAction stops 2b, starts 1.
-	Action timer1aAction, timer1bAction, timer2aAction, timer2bAction,
-			keyAction;
+	
+	Action timer1aAction, timer1bAction, timer2aAction, timer2bAction;
+    Action keyAction;	// stops 2b, starts 1.
 
-	// variables used for running experiment
-	//String script, fontFace, promptString, keyStruck;
 	String keyStruck;
-	//int reps, fontSize, horiz, vert, delay;
-	//boolean randomTrialOrder, randomDisplayOrder, leaveDisplayOn, prompt,
-	//		feedback;
 	
 	Experiment experiment; //// NEW DATA STRUCTURE ////
 	Block currBlock;
-	
-	//int ctr = 0;
+
 	int trialCtr = 0, displayCtr = 0;
 	int hPosition = 0, vPosition = 0, hVal = 0, vVal = 0;
-	// int parseScriptReturnVal = 0; //Replaced by simply enabling/disabling the start button
-	boolean acceptKeyStroke = false, eraseAfterLastDisplay = true,
-			runningExperiment = false;
-	boolean includeAllLetters = false, includeAllNumbers = false;
+
+	boolean acceptKeyStroke = false, eraseAfterLastDisplay = true;
+	boolean runningExperiment = false;
+	
 	double startRxnTimeMeasure = 0, stopRxnTimeMeasure = 0, rxnTime = 0;
 	double tempstart, tempstop, temptime;
 
-	Vector vectorOfTrialsz;
-	ArrayList<Trial> trials;
+	//Vector vectorOfTrialsz;
 	Vector vct;
-	Vector vectorOfUsableKeys, vectorOfTrialTypes;
-	Vector userResponsesVector = new Vector();
+	//Vector vectorOfUsableKeys, vectorOfTrialTypes;
+	List<Response> userResponses = new ArrayList<Response>();
 
 	Trial oneTrial;
-	Vector oneTrialVector;
+	List<Display> currentDisplays;
 	StreamTokenizer st, streamTokenizer;
-	Clip clip;
-	Vector audioClipVector = new Vector();
 	String imagePath; //directoryString
 	// Player mediaPlayer;
 	Component videoComponent;
@@ -109,14 +100,12 @@ public class GenLab extends JApplet implements ComponentListener {
 		getContentPane().add(tabbedPane);
 		// pack();
 
-		trials = new ArrayList<Trial>();
 		runP.presPan.videoPanVector = new Vector();
 		runP.presPan.mediaPlayerVector = new Vector();
 		runP.presPan.videoNameVector = new Vector();
 
 		runP.startJB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setupExperimentFromOldScript();
 				runExperiment(); // This button should be disabled => this
 									// action unperformable
 			} // if the parse script failed.
@@ -124,7 +113,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		runP.instructionsJB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(runP, scriptInstructions,
+				JOptionPane.showMessageDialog(runP, experiment.instructions,
 						"Instructions", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -137,8 +126,7 @@ public class GenLab extends JApplet implements ComponentListener {
 				tempstop = System.currentTimeMillis();
 				temptime = tempstop - tempstart;
 				tempstart = System.currentTimeMillis();
-				Display currentDisplay = (Display) oneTrialVector
-						.elementAt(displayCtr);
+				Display currentDisplay = (Display) currentDisplays.get(displayCtr);
 
 				PositionType pt = currentDisplay.getPositionType();
 
@@ -163,50 +151,45 @@ public class GenLab extends JApplet implements ComponentListener {
 				switch(currentDisplay.getDisplayType())
 				{
 				case TEXT:
-					runP.presPan.drawWord(currentDisplay.getItemDisplayed(),
+					runP.presPan.drawWord(currentDisplay.getTextOrPath(),
 							currBlock.font.getFontName(), currBlock.font.getSize(), hVal, vVal, horiz, vert,
 							leaveDisplayOn);
 					break;
 				case IMAGE:
 					// runP.presPan.showVideo(currentDisplay.itemDisplayed,
 					// hVal, vVal, horiz, vert, leaveDisplayOn);
-					runP.presPan.drawPicture(currentDisplay.getItemDisplayed(),
+					runP.presPan.drawPicture(currentDisplay.getTextOrPath(),
 							hVal, vVal, horiz, vert, leaveDisplayOn);
 					break;
 				case SOUND:
-					((Clip) audioClipVector.elementAt(Integer
-							.parseInt(currentDisplay.getItemDisplayed())))
-							.setFramePosition(0);
-
-					((Clip) audioClipVector.elementAt(Integer
-							.parseInt(currentDisplay.getItemDisplayed()))).start();
+					Clip c = PresentationPanel.loadAudioClip(currentDisplay.getTextOrPath());
+					c.start();
 					break;
 				case VIDEO:
-					runP.presPan.showVideo(currentDisplay.getItemDisplayed(), hVal,
+					runP.presPan.showVideo(currentDisplay.getTextOrPath(), hVal,
 							vVal, horiz, vert, leaveDisplayOn);
 					break;
 				}
 
 				//TODO: Should this be based on Persist time?
-				if (((Display) oneTrialVector.elementAt(displayCtr)).getDurationSecs() != 0) {
+				if (currentDisplay.getDurationSecs() != 0) {
 					eraseAfterLastDisplay = true;
 				} else {
 					eraseAfterLastDisplay = false;
 				}
 
 				// If display is last in trial
-				if (displayCtr == (oneTrialVector.size() - 1)) {
+				if (displayCtr == (currentDisplays.size() - 1)) {
 					startRxnTimeMeasure = System.currentTimeMillis();
 					acceptKeyStroke = true;
 					runP.promptJL.setText(experiment.promptString);
 				}
 
 				timer1a.stop();
-				timer1b.setInitialDelay((int) (((Display) oneTrialVector
-						.elementAt(displayCtr)).getDurationSecs() * 1000));
-				displayCtr++;
-
+				
+				timer1b.setInitialDelay((int) (currentDisplay.getDurationSecs() * 1000));
 				timer1b.restart();
+				displayCtr++;
 
 			}
 		};
@@ -238,14 +221,14 @@ public class GenLab extends JApplet implements ComponentListener {
 
 				if (shouldDraw = !shouldDraw) {
 
-					if ((!includeAllNumbers) && (!includeAllLetters)
+					if ((!experiment.includeAllLetters) && (!experiment.includeAllNumbers)
 							&& (experiment.giveFeedback)) {
 						if (keyStruck.equals(oneTrial.correctKey)) {
 							runP.feedbackJL.setText("Correct");
 						} else {
 							runP.feedbackJL.setText("Incorrect");
 						}
-					} else if ((includeAllNumbers) || (includeAllLetters)) {
+					} else if ((experiment.includeAllNumbers) || (experiment.includeAllLetters)) {
 						runP.feedbackJL.setText(keyStruck);
 					}
 					if (!experiment.promptString.equals("")) {
@@ -287,26 +270,24 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		keyStruck = keyStruck.toLowerCase();
 
-		OneResponse oneResponse = new OneResponse();
-
-		oneResponse.buildResponse(oneTrial.trialType, oneTrial.correctKey,
+		Response response = new Response(oneTrial.trialType, oneTrial.correctKey,
 				keyStruck, rxnTime);
 
-		userResponsesVector.addElement(oneResponse);
+		userResponses.add(response);
 
 		timer1b.stop();
 		runP.presPan.clearMediaPlayer();
-		if ((displayCtr >= oneTrialVector.size())
-				&& (trialCtr < trials.size())) {
+		if ((displayCtr >= currentDisplays.size())
+				&& (trialCtr < currBlock.trials.size())) {
 			trialCtr++;
 			displayCtr = 0;
 			runP.presPan.clearVector();
 		}
 
-		if (trialCtr >= trials.size()) {
+		if (trialCtr >= currBlock.trials.size()) {
 			printResults();
 			runP.promptJL.setText("Experiment Over");
-			if (!scriptInstructions.equals("")) {
+			if (!experiment.instructions.equals("")) {
 				runP.instructionsJB.setVisible(true);
 			}
 			runP.startJB.setText("Start Experiment");
@@ -320,7 +301,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	public void clearTheScreen() {
 
-		if (displayCtr >= oneTrialVector.size()) {
+		if (displayCtr >= currentDisplays.size()) {
 			if (eraseAfterLastDisplay == true) {
 				runP.presPan.eraseAll();
 			}
@@ -331,41 +312,6 @@ public class GenLab extends JApplet implements ComponentListener {
 			timer1b.stop();
 			timer1a.start();
 		}
-	}
-
-	public Clip loadAudioClip(String filename) {
-		try {
-
-			AudioInputStream stream = AudioSystem.getAudioInputStream(new File(
-					filename));
-
-			// At present, ALAW and ULAW encodings must be converted
-			// to PCM_SIGNED before it can be played
-			AudioFormat format = stream.getFormat();
-
-			if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-				stream = AudioSystem.getAudioInputStream(
-						AudioFormat.Encoding.PCM_SIGNED, stream);
-				format = stream.getFormat();
-			}
-
-			// Create the clip
-			DataLine.Info info = new DataLine.Info(Clip.class,
-					stream.getFormat(),
-					((int) stream.getFrameLength() * format.getFrameSize()));
-			clip = (Clip) AudioSystem.getLine(info);
-
-			// This method does not return until the audio file is completely
-			// loaded
-			clip.open(stream);
-
-		} catch (IOException e) {
-		} catch (LineUnavailableException e) {
-		} catch (UnsupportedAudioFileException e) {
-
-		}
-		return clip;
-
 	}
 
 	// ********************************
@@ -380,13 +326,13 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		instruct1Panel = new JPanel();
 		instruct1Panel.setBackground(Color.white);
-		instructions1 = "genlabInstr1.jpg";
-		addInstructions(instruct1Panel, instructions1);
+		instructionsScreen1Path = "genlabInstr1.jpg";
+		addInstructions(instruct1Panel, instructionsScreen1Path);
 		trialVarsP = new TrialVarsPanel();
 		instruct2Panel = new JPanel();
 		instruct2Panel.setBackground(Color.white);
-		instructions2 = "genlabInstr2.jpg";
-		addInstructions(instruct2Panel, instructions2);
+		instructionsScreen2Path = "genlabInstr2.jpg";
+		addInstructions(instruct2Panel, instructionsScreen2Path);
 		exptVarsP = new ExptVarsPanel();
 		runP = new RunPanel();
 		runP.addComponentListener(this);
@@ -464,15 +410,36 @@ public class GenLab extends JApplet implements ComponentListener {
 		stopRxnTimeMeasure = 0;
 		rxnTime = 0;
 		acceptKeyStroke = false;
-		userResponsesVector.removeAllElements();
+		userResponses.clear();
 		eraseAfterLastDisplay = true;
 		currBlock = experiment.blocks.get(0);
 		// includeAllLetters = false;
 		// includeAllNumbers = false;
 	}
 	
+
 	
 	private boolean setupExperimentFromOldScript()
+	{
+		experiment = ExperimentManager.loadExperiment(exptVarsP);
+		if (experiment != null) 
+		{
+			setupRunPanel();
+			runP.startJB.setEnabled(true);
+			runP.startJB.setToolTipText("Begin the experiment.");
+			return true;
+		} 
+		else
+		{
+			runP.startJB.setEnabled(false);
+			runP.startJB.setToolTipText("Error parsing script.  Check script and setup page.");
+			return false;
+		}
+	}
+
+	
+	/*
+	private boolean setupExperimentFromOldScript2()
 	{
 		// get script name
 		experiment = new Experiment();
@@ -538,7 +505,8 @@ public class GenLab extends JApplet implements ComponentListener {
 			return false;
 		}
 	}
-
+*/
+	/*
 	private int parseScript2(){
 		String scriptString, trialString;
 		int numTrials = 0;
@@ -902,16 +870,59 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		return (1);
 	}
-	
-	
-	
+	*/
+	public void setupRunPanel()
+	{
+		runP.presPan.mediaPlayerVector.removeAllElements();
+		runP.presPan.videoNameVector.removeAllElements();
+		runP.presPan.videoPanCtr = 0;
+		
+		runP.getInputMap().clear();
+		runP.getActionMap().clear();
+		runP.presPan.videoPanCtr = 0;
+		for (int i = 0; i < experiment.usableKeys.size(); i++) {
+
+			char c = ((String) experiment.usableKeys.get(i)).charAt(0);
+
+			if (c == '*') {
+
+				for (int j = 0; j < 26; j++) {
+
+					runP.getInputMap().put(
+							KeyStroke.getKeyStroke("abcdefghijklmnopqrstuvwxyz".charAt(j)),
+							"doKeyAction");
+					runP.getActionMap().put("doKeyAction", this.keyAction);
+				}
+
+			} else if (c == '#') {
+				for (int j = 0; j < 10; j++) {
+					runP.getInputMap().put(
+							KeyStroke.getKeyStroke("" + j),
+							"doKeyAction");
+					runP.getActionMap().put("doKeyAction", this.keyAction);
+				}
+
+			} else {
+				runP.getInputMap()
+						.put(KeyStroke.getKeyStroke(c), "doKeyAction");
+				runP.getActionMap().put("doKeyAction", this.keyAction);
+			}
+		}
+		runP.promptJL.setText("");
+		if (experiment.instructions.equals("")) {
+			runP.instructionsJB.setVisible(false);
+		} else {
+			runP.instructionsJB.setVisible(true);
+		}
+	}
+
 	private void runExperiment() {
 
 		runP.requestFocus();
 
 		if (runningExperiment) {
 			abortExperiment();
-			if (!scriptInstructions.equals("")) {
+			if (!experiment.instructions.equals("")) {
 				runP.instructionsJB.setVisible(true);
 			}
 		} else {
@@ -955,9 +966,9 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	public void startTimer1() {
 
-		oneTrial = (Trial) trials.get(trialCtr);
+		oneTrial = (Trial) currBlock.trials.get(trialCtr);
 
-		oneTrialVector = new Vector(oneTrial.displays);
+		currentDisplays = new Vector(oneTrial.displays);
 
 		// timer1b.setDelay((int)(((OneDisplay)oneTrialVector.elementAt(displayCtr)).durationInSecs
 		// * 1000));
@@ -975,62 +986,61 @@ public class GenLab extends JApplet implements ComponentListener {
 		String rawDataResultsString = "trial-num category correct-key-response user-response-key response-time-in secs\n\n";
 
 		int[][] resultsArray_numTrials;
-		resultsArray_numTrials = new int[vectorOfTrialTypes.size()][vectorOfUsableKeys
+		resultsArray_numTrials = new int[experiment.trialTypes.size()][experiment.usableKeys
 				.size()];
 
 		long[][] resultsArray_totalResponseTime;
-		resultsArray_totalResponseTime = new long[vectorOfTrialTypes.size()][vectorOfUsableKeys
+		resultsArray_totalResponseTime = new long[experiment.trialTypes.size()][experiment.usableKeys
 				.size()];
 
 		int[][] resultsArray_numCorrectResponses;
-		resultsArray_numCorrectResponses = new int[vectorOfTrialTypes.size()][2];
+		resultsArray_numCorrectResponses = new int[experiment.trialTypes.size()][2];
 
 		long[][] resultsArray_totalResponseTime_correct_incorrect;
-		resultsArray_totalResponseTime_correct_incorrect = new long[vectorOfTrialTypes
+		resultsArray_totalResponseTime_correct_incorrect = new long[experiment.trialTypes
 				.size()][2];
 
 		int[][] resultsArray_NUMS_numTrials;
-		resultsArray_NUMS_numTrials = new int[vectorOfTrialTypes.size()][10];
+		resultsArray_NUMS_numTrials = new int[experiment.trialTypes.size()][10];
 
 		long[][] resultsArray_NUMS_totalResponseTime;
-		resultsArray_NUMS_totalResponseTime = new long[vectorOfTrialTypes
+		resultsArray_NUMS_totalResponseTime = new long[experiment.trialTypes
 				.size()][10];
 
-		java.util.Collections.sort(vectorOfUsableKeys);
-		if (vectorOfUsableKeys.elementAt(0).equals("*")
-				|| vectorOfUsableKeys.elementAt(0).equals("#")) {
-			Object s = vectorOfUsableKeys.elementAt(0);
-			vectorOfUsableKeys.removeElementAt(0);
-			vectorOfUsableKeys.add(s);
+		java.util.Collections.sort(experiment.usableKeys);
+		if (experiment.usableKeys.get(0).equals("*")
+				|| experiment.usableKeys.get(0).equals("#")) {
+			String s = experiment.usableKeys.get(0);
+			experiment.usableKeys.remove(0);
+			experiment.usableKeys.add(s);
 		}
-		if (vectorOfUsableKeys.elementAt(0).equals("*")
-				|| vectorOfUsableKeys.elementAt(0).equals("#")) {
-			Object s = vectorOfUsableKeys.elementAt(0);
-			vectorOfUsableKeys.removeElementAt(0);
-			vectorOfUsableKeys.add(s);
+		if (experiment.usableKeys.get(0).equals("*")
+				|| experiment.usableKeys.get(0).equals("#")) {
+			String s = experiment.usableKeys.get(0);
+			experiment.usableKeys.remove(0);
+			experiment.usableKeys.add(s);
 		}
 
-		for (int i = 0; i < userResponsesVector.size(); i++) {
+		for (int i = 0; i < userResponses.size(); i++) {
 
-			OneResponse oneResponse = (OneResponse) userResponsesVector
-					.elementAt(i);
-			Trial oneTrial = (Trial) trials.get(i);  //TODO: Why isn't this used?  whats happening here in general.
+			Response r = (Response) userResponses.get(i);
+			Trial trial = (Trial) currBlock.trials.get(i);  //TODO: Why isn't this used?  whats happening here in general.
 
-			if (includeAllNumbers) {
+			if (experiment.includeAllNumbers) {
 				rawDataResultsString += (int) (i + 1) + " "
-						+ oneResponse.trialType + " "
-						+ oneResponse.userResponseKey + " "
-						+ (double) (oneResponse.responseTime / 1000) + "\n";
-				for (int j = 0; j < vectorOfTrialTypes.size(); j++) {
+						+ r.trialType + " "
+						+ r.userResponseKey + " "
+						+ (double) (r.responseTime / 1000) + "\n";
+				for (int j = 0; j < experiment.trialTypes.size(); j++) {
 
-					if (vectorOfTrialTypes.elementAt(j).equals(
-							oneResponse.trialType)) {
+					if (experiment.trialTypes.get(j).equals(
+							r.trialType)) {
 						for (int k = 0; k < 10; k++) {
 
-							if ((oneResponse.userResponseKey).equals(String
+							if ((r.userResponseKey).equals(String
 									.valueOf(k))) {
 								resultsArray_NUMS_numTrials[j][k]++;
-								resultsArray_NUMS_totalResponseTime[j][k] += oneResponse.responseTime;
+								resultsArray_NUMS_totalResponseTime[j][k] += r.responseTime;
 
 								// if
 								// ((oneResponse.correctKey).equals(oneResponse.userResponseKey))
@@ -1064,45 +1074,45 @@ public class GenLab extends JApplet implements ComponentListener {
 				}
 			} else {
 				rawDataResultsString += (int) (i + 1) + " "
-						+ oneResponse.trialType + " " + oneResponse.correctKey
-						+ " " + oneResponse.userResponseKey + " "
-						+ (double) (oneResponse.responseTime / 1000) + "\n";
-				for (int j = 0; j < vectorOfTrialTypes.size(); j++) {
+						+ r.trialType + " " + r.correctKey
+						+ " " + r.userResponseKey + " "
+						+ (double) (r.responseTime / 1000) + "\n";
+				for (int j = 0; j < experiment.trialTypes.size(); j++) {
 
-					if (vectorOfTrialTypes.elementAt(j).equals(
-							oneResponse.trialType)) {
-						for (int k = 0; k < vectorOfUsableKeys.size(); k++) {
+					if (experiment.trialTypes.get(j).equals(
+							r.trialType)) {
+						for (int k = 0; k < experiment.usableKeys.size(); k++) {
 
-							if ((((oneResponse.userResponseKey)
-									.equals(vectorOfUsableKeys.elementAt(k)))
-									|| ((vectorOfUsableKeys.elementAt(k)
+							if ((((r.userResponseKey)
+									.equals(experiment.usableKeys.get(k)))
+									|| ((experiment.usableKeys.get(k)
 											.equals("*")) && (isInArray(
-											oneResponse.userResponseKey,
-											arrayOfLetters))) || ((vectorOfUsableKeys
-									.elementAt(k).equals("#")) && (isInArray(
-									oneResponse.userResponseKey, arrayOfNumbers))))) {
+											r.userResponseKey,
+											arrayOfLetters))) || ((experiment.usableKeys
+									.get(k).equals("#")) && (isInArray(
+									r.userResponseKey, arrayOfNumbers))))) {
 								resultsArray_numTrials[j][k]++;
-								resultsArray_totalResponseTime[j][k] += oneResponse.responseTime;
+								resultsArray_totalResponseTime[j][k] += r.responseTime;
 
-								if ((oneResponse.correctKey)
-										.equals(oneResponse.userResponseKey)) {
+								if ((r.correctKey)
+										.equals(r.userResponseKey)) {
 
 									resultsArray_numCorrectResponses[j][0]++;
-									resultsArray_totalResponseTime_correct_incorrect[j][0] += oneResponse.responseTime;
+									resultsArray_totalResponseTime_correct_incorrect[j][0] += r.responseTime;
 									break;
-								} else if ((((oneResponse.correctKey)
+								} else if ((((r.correctKey)
 										.equals("*")) && (isInArray(
-										oneResponse.userResponseKey,
+										r.userResponseKey,
 										arrayOfLetters)))
-										|| (((oneResponse.correctKey)
+										|| (((r.correctKey)
 												.equals("#")) && (isInArray(
-												oneResponse.userResponseKey,
+												r.userResponseKey,
 												arrayOfNumbers)))) {
 									resultsArray_numCorrectResponses[j][0]++;
-									resultsArray_totalResponseTime_correct_incorrect[j][0] += oneResponse.responseTime;
+									resultsArray_totalResponseTime_correct_incorrect[j][0] += r.responseTime;
 								} else {
 									resultsArray_numCorrectResponses[j][1]++;
-									resultsArray_totalResponseTime_correct_incorrect[j][1] += oneResponse.responseTime;
+									resultsArray_totalResponseTime_correct_incorrect[j][1] += r.responseTime;
 									break;
 								}
 
@@ -1115,11 +1125,11 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		String resultsString = "";
 
-		for (int j = 0; j < vectorOfTrialTypes.size(); j++) {
+		for (int j = 0; j < experiment.trialTypes.size(); j++) {
 			resultsString += "Results for all Category "
-					+ vectorOfTrialTypes.elementAt(j) + " items:\n";
+					+ experiment.trialTypes.get(j) + " items:\n";
 
-			if (includeAllNumbers) {
+			if (experiment.includeAllNumbers) {
 
 				double avgResponse_NUMS = 0;
 				int totalResponses_NUMS = 0;
@@ -1154,20 +1164,20 @@ public class GenLab extends JApplet implements ComponentListener {
 
 			} else {
 
-				for (int k = 0; k < vectorOfUsableKeys.size(); k++) {
+				for (int k = 0; k < experiment.usableKeys.size(); k++) {
 
 					if (resultsArray_numTrials[j][k] != 0) {
 
 						double avgResponseTime = (double) ((double) (resultsArray_totalResponseTime[j][k] / resultsArray_numTrials[j][k]) / 1000);
 
 						resultsString += "   Responded with "
-								+ vectorOfUsableKeys.elementAt(k) + " on "
+								+ experiment.usableKeys.get(k) + " on "
 								+ resultsArray_numTrials[j][k]
 								+ " trials with an average response time of "
 								+ avgResponseTime + " seconds.\n";
 					} else {
 						resultsString += "   Responded with "
-								+ vectorOfUsableKeys.elementAt(k) + " on "
+								+ experiment.usableKeys.get(k) + " on "
 								+ resultsArray_numTrials[j][k] + " trials.\n";
 					}
 				}
@@ -1236,8 +1246,9 @@ public class GenLab extends JApplet implements ComponentListener {
 		// startJB.setEnabled(false);
 		// feedbackJL.setText("   ");
 	}
-
+	//TODO: use these listeners to ensure window sizes?  Currently fixed, just maybe not on screen.. hmm...
 	public void componentResized(ComponentEvent e) {
+		//System.out.println("Resized!");
 	}
 
 	public void componentMoved(ComponentEvent e) {
@@ -1278,27 +1289,27 @@ public class GenLab extends JApplet implements ComponentListener {
 	// MAIN
 	// ===================================================
 
-//	public static void main(String[] args) {
-//		GenLab glab = new GenLab();
-//		glab.setSize(875, 735);
-//	}
+	public static void main(String[] args) {
+		//Do Nothing
+		System.out.println("Do not run this as a java application; it is an applet.");
+	}
 }
 
 
-class OneResponse {
+
+class Response {
 
 	String trialType = "";
 	String correctKey = "";
 	String userResponseKey = "";
 	double responseTime = 0;
 
-	OneResponse buildResponse(String trialType, String correctKey,
+	public Response(String trialType, String correctKey,
 			String userResponseKey, double responseTime) {
 		this.trialType = trialType;
 		this.correctKey = correctKey;
 		this.userResponseKey = userResponseKey;
 		this.responseTime = responseTime;
-		return this;
 	}
 
 }

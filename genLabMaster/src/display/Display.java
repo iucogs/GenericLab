@@ -122,7 +122,7 @@ public class Display {
 		return positionType;
 	}
 
-	public String getItemDisplayed() {
+	public String getTextOrPath() {
 		return textOrPath;
 	}
 

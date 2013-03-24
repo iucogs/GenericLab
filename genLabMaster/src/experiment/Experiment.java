@@ -13,12 +13,17 @@ public class Experiment implements Iterable<Block>{
 	public Boolean randomizeBlockOrder;
 	public Point windowPosition;
 	public Dimension windowSize;
-	public Boolean giveFeedback;
+	public Boolean giveFeedback,includeAllNumbers,includeAllLetters;
 	public String promptString;
 	
 	//Meta Settings
 	public String scriptFilename;
+	public String instructionsFilename;
+	public String instructions;
 	public String scriptDirectory;
+	public List<String> usableKeys;
+	public List<String> trialTypes;
+	
 	
 	public List<Block> blocks = new ArrayList<Block>(1);
 	
