@@ -1,3 +1,4 @@
+package gui;
 //package genlab;
 
 
@@ -32,7 +33,7 @@ public class ExptVarsPanel extends JPanel {
 	Color gold = new Color(225, 221, 95);
 	Font f12b = new Font("Arial", Font.BOLD, 12);
 
-	File scriptDirectory;
+	private File scriptDirectory;
 
 	public ExptVarsPanel(){
 
@@ -73,6 +74,7 @@ public class ExptVarsPanel extends JPanel {
 		browseJB = new JButton("Browse Local Files");
 
 		AbstractAction browseJBaction = new AbstractAction(){	
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent ae) {
 				//Todo: Get this to work in browser applet
 				scriptname = "";
@@ -466,7 +468,7 @@ public class ExptVarsPanel extends JPanel {
 	}
 
 	public String getScriptDirectory(){
-		return scriptDirectory.getAbsolutePath() + scriptDirectory.separator;	
+		return scriptDirectory.getAbsolutePath() + File.separator;	
 	}
 
 	public String getReps(){

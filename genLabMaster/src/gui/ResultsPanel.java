@@ -1,3 +1,4 @@
+package gui;
 //package genlab;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import java.util.*;
 
 public class ResultsPanel extends JPanel {
 
-	JTextArea resultsJTA;
+	public JTextArea resultsJTA;
 	JScrollPane pane;
 	JButton saveJB, saveRawDataJB;
 	Color resultsGreen = new Color(169, 202, 109);	

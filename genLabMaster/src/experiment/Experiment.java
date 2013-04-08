@@ -17,10 +17,10 @@ public class Experiment implements Iterable<Block>{
 	public String promptString;
 	
 	//Meta Settings
-	public String scriptFilename;
+	public String scriptFilename;  //This path is absolute, from JFC
 	public String instructionsFilename;
 	public String instructions;
-	public String scriptDirectory;
+	public String directory;  //This is the current directory of the JFC when the file was chosen.   Includes a trailing separator.
 	public List<String> usableKeys;
 	public List<String> trialTypes;
 	

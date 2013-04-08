@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import display.Display;
 
 public class Trial implements Iterable<Display> {
 

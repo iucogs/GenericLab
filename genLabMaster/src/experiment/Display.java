@@ -1,9 +1,8 @@
-package display;
+package experiment;
 
 import java.awt.Dimension;
 import java.awt.Point;
 
-import experiment.Trial;
 
 
 public class Display {
@@ -55,7 +54,7 @@ public class Display {
 	
 	private DisplayType displayType;
 	private PositionType positionType;
-	private String textOrPath;
+	private String textOrPath;  // Is built from experiment.directory + (filename of this resource)
 	private Point position = new Point(0,0);
 	private Dimension randomOffset = new Dimension(0,0);
 	private double durationSecs;  //in seconds

@@ -1,3 +1,4 @@
+package core;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
@@ -18,50 +19,54 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import display.Display;
-import display.Display.DisplayType;
-import display.Display.PositionType;
 import experiment.Block;
+import experiment.Display;
 import experiment.Experiment;
 import experiment.Trial;
+import experiment.Display.DisplayType;
+import experiment.Display.PositionType;
+import gui.ExptVarsPanel;
+import gui.PresentationPanel;
 
 
-public class ExperimentManager {
+public class ExperimentUtilities {
 
+	//''''''''Script Loading Methods'''''''''
 	/**
 	 * Loads an Experiment from an old script file.  Returns null if loading fails.
 	 * @param genLab
 	 * @param varsP
 	 * @return
 	 */
-	public static Experiment loadExperiment(ExptVarsPanel varsP)
+	public static Experiment loadScriptExperiment()
 	{
+		ExptVarsPanel varsP = GenLab.getInstance().exptVarsP;
 		Experiment ex = new Experiment();
 		Block block = new Block(); //Default Block
 		ex.blocks.add(block);
 		boolean success; 
-		success = initializeExperiment(ex,varsP);//Initial Experiment setup from ExptVarsPanel
+		success = initializeScriptExperiment(ex);//Initial Experiment setup from ExptVarsPanel
 		if (!success)
 			return null;
-		success = parseScriptFile(ex,varsP);
+		success = parseScript(ex);
 		if (!success)
 			return null;
-		success = loadExptPanelSettings(ex,varsP);
+		success = loadSettingsFromExptPanel(ex);
 		if (!success)
 			return null;
 		
 		return ex;
 	}
-	
-	private static boolean initializeExperiment(Experiment ex, ExptVarsPanel exptVarsP)
+	private static boolean initializeScriptExperiment(Experiment ex)
 	{
+		ExptVarsPanel exptVarsP = GenLab.getInstance().exptVarsP;
 		Block block = ex.blocks.get(0);
 		ex.scriptFilename = exptVarsP.getScript();
 		if (ex.scriptFilename.equals("")) {
 			varError(exptVarsP,0, "");  //TODO varError: keep this setup?
 			return false;
 		}
-		ex.scriptDirectory = exptVarsP.getScriptDirectory();
+		ex.directory = exptVarsP.getScriptDirectory();
 		// get repetitions
 		int reps;
 		try {
@@ -101,8 +106,7 @@ public class ExperimentManager {
 		}
 		return true;
 	}
-	
-	private static boolean parseScriptFile(Experiment ex, Component container){
+	private static boolean parseScript(Experiment ex){
 		String scriptString, trialString;
 		int numTrials = 0;
 		int numDisplays = 0;
@@ -147,14 +151,14 @@ public class ExperimentManager {
 				}
 
 			} catch (NumberFormatException nfe) {
-				JOptionPane.showMessageDialog(container,
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
 						"Number of trials must be an integer >= 0",
 						"Variable error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 
 			if (numTrials < 0) {
-				varError(container,5, "");
+				varError(GenLab.getInstance(),5, "");
 				return false;
 			}
 
@@ -237,18 +241,18 @@ public class ExperimentManager {
 							textOrPath = textOrPath.trim();
 							break;
 						case IMAGE:
-							textOrPath = ex.scriptDirectory + (String) tokenVector.elementAt(tokenCtr++);
-							Image tempImg = Toolkit.getDefaultToolkit().getImage(textOrPath);
+							textOrPath = (String) tokenVector.elementAt(tokenCtr++);
+							Image tempImg = Toolkit.getDefaultToolkit().getImage(ex.directory + textOrPath);
 	
 							try {
 								//Load it up , just to verify if it works.
-								MediaTracker tracker = new MediaTracker(container);
+								MediaTracker tracker = new MediaTracker(GenLab.getInstance());
 								tracker.addImage(tempImg, 0);
 								tracker.waitForID(0);
-								int tempWidth = tempImg.getWidth(container);
-								int tempHeight = tempImg.getHeight(container);
+								int tempWidth = tempImg.getWidth(GenLab.getInstance());
+								int tempHeight = tempImg.getHeight(GenLab.getInstance());
 								if ((tempWidth <= 0) || (tempHeight <= 0)) {
-									varError(container,8, textOrPath);
+									varError(GenLab.getInstance(),8, textOrPath);
 									return false;
 								}
 								// TODO: Clean up these comments
@@ -273,12 +277,11 @@ public class ExperimentManager {
 //							}
 							break;
 						case SOUND:
-							textOrPath =  ex.scriptDirectory
-									+ (String) tokenVector.elementAt(tokenCtr++);
+							textOrPath = (String) tokenVector.elementAt(tokenCtr++);
 							//Load it up , just to verify if it works.
-						Clip theClip = PresentationPanel.loadAudioClip(textOrPath);
+						Clip theClip = PresentationPanel.loadAudioClip(ex.directory + textOrPath);
 							if (theClip == null) {
-								varError(container,9, textOrPath);
+								varError(GenLab.getInstance(),9, textOrPath);
 								return false;
 							}
 							duration = theClip.getMicrosecondLength() / 1000000.0;
@@ -321,19 +324,20 @@ public class ExperimentManager {
 				trials.add(oneTrial);
 			}
 		} catch (FileNotFoundException fnfe) {
-			JOptionPane.showMessageDialog(container, "File not found error:  "
+			JOptionPane.showMessageDialog(GenLab.getInstance(), "File not found error:  "
 					+ fnfe, "File error", JOptionPane.ERROR_MESSAGE);
 			System.out.println("trying to read file  " + fnfe);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(container, "Error reading from file:  "
+			JOptionPane.showMessageDialog(GenLab.getInstance(), "Error reading from file:  "
 					+ ioe, "File error", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		return true;
 	}
-
-	private static boolean loadExptPanelSettings(Experiment ex, ExptVarsPanel exptVarsP)
+	private static boolean loadSettingsFromExptPanel(Experiment ex)
 	{
+		ExptVarsPanel exptVarsP = GenLab.getInstance().exptVarsP;
+
 		// Replicate each trial based on reps number
 		int reps = ex.blocks.get(0).reps;
 		List<Trial> trials = ex.blocks.get(0).trials;
@@ -393,8 +397,8 @@ public class ExperimentManager {
 			String instructionsString = "";
 			try {
 
-				String instructionsPathPlusFilename = exptVarsP.scriptDirectory
-						+ "\\" + ex.instructionsFilename;
+				String instructionsPathPlusFilename = ex.directory
+						 + ex.instructionsFilename;
 				File scriptFile = new File(instructionsPathPlusFilename);
 				BufferedReader br = new BufferedReader(new FileReader(
 						scriptFile));
@@ -415,6 +419,8 @@ public class ExperimentManager {
 		}
 		return true;
 	}
+	
+	
 	
 	private static void varError(Component container, int errorNum, String errorString) {
 

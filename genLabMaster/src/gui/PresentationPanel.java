@@ -1,3 +1,4 @@
+package gui;
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -13,6 +14,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.util.*;
@@ -38,7 +40,7 @@ import java.net.URL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-class PresentationPanel extends JPanel {
+public class PresentationPanel extends JPanel {
 
 
 //	boolean xhair, eotMsg, dot;
@@ -64,15 +66,17 @@ class PresentationPanel extends JPanel {
 //        Player player, mediaPlayer2;
         Component videoComponent;
         vlcjPlayer videoPlayer;
-        Vector videoPanVector;
-        Vector mediaPlayerVector;
-        Vector videoNameVector;
+        public  Vector videoPanVector = new Vector();
+        public   Vector mediaPlayerVector = new Vector();
+        public Vector videoNameVector = new Vector();
     //    Vector realizedPlayerVector;
-        int videoPanCtr = 0;
+        public   int videoPanCtr = 0;
 
 
 	public PresentationPanel(){
-
+		///Init Vars
+		thisTrial = new Vector();		
+		///Setup GUI
 		setBackground(Color.white);
 		setForeground(Color.black);
 		d2 = new Dimension(780, 450);
@@ -86,7 +90,6 @@ class PresentationPanel extends JPanel {
 		centerypoint = Math.round(centery);
 		float centerx = (paneWidth ) / 2;
 		centerxpoint = Math.round(centerx);
-		thisTrial = new Vector();
 		this.setVisible(true);
 	}
 

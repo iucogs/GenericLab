@@ -1,3 +1,4 @@
+package gui;
 //package genlab;
 
 import javax.swing.*;
