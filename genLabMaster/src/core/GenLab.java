@@ -120,7 +120,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		exptVarsP = new ExptVarsPanel();
 		runP = new RunPanel();
 		resultsP = new ResultsPanel();
-		introP = new IntroPanel(tabbedPane);
+		introP = new IntroPanel();
 		loadP = new LoadPanel();
 		
 		/// Setup Tabs
@@ -128,21 +128,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		setupTabbedPane();
 		getContentPane().add(tabbedPane);
 		
-		runP.startJB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				runExperiment(); // This button should be disabled => this
-									// action unperformable
-			} // if the parse script failed.
-		});
-
-		runP.instructionsJB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(runP, experiment.instructions,
-						"Instructions", JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
 		setupTimerAndKeyActions();
-	
 	}
 	
 	private void setupTimerAndKeyActions()
@@ -315,7 +301,7 @@ public class GenLab extends JApplet implements ComponentListener {
 			runP.presPan.clearVector();
 		}
 
-		if (trialCtr >= currBlock.trials.size()) {
+		if (trialCtr >= currBlock.trials.size()) { //Experiment over!  //TODO: Restructure this?
 			printResults();
 			runP.promptJL.setText("Experiment Over");
 			if (!experiment.instructions.equals("")) {
@@ -345,10 +331,6 @@ public class GenLab extends JApplet implements ComponentListener {
 		}
 	}
 
-	// ********************************
-	// set up interface
-	// ********************************
-
 	/**
 	 * Populate the tabs with panels. Add a listener to detect changes from
 	 * Panes. Load the script and setup when moving to the run pane.
@@ -364,35 +346,28 @@ public class GenLab extends JApplet implements ComponentListener {
 				"Set experiment variables");
 		tabbedPane.addTab("Run Experiment", runP);
 		tabbedPane.addTab("Results", resultsP);
+		tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),false);
+
 
 		ChangeListener changeListener = new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
 				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
-				int index = tabbedPane.getSelectedIndex();
-				switch(index){
-					case 0:
-						loadP.setupTable();
-						break;
-					case 5:
-						setupExperimentFromOldScript();
-						tabbedPane.setEnabledAt(6,true);
-						break;
-					default:
-						break;
+				Component c = tabbedPane.getSelectedComponent();
+				
+				if (c instanceof IntroPanel)
+				{
+					introP.doIntroMenu();
 				}
-				//TODO: Change the Results Pane disabling to be smarter-
-				// Only enable it after an experiment has started, and then leave it enabled.
-				if(index != 5 && index != 6){
-					tabbedPane.setEnabledAt(6,false);
+				else if (c instanceof RunPanel)
+				{
+					setupExperimentFromOldScript();
+					int runIndex = tabbedPane.indexOfComponent(runP);
+					tabbedPane.setEnabledAt(runIndex,true);
 				}
 			}
 		};
 		tabbedPane.addChangeListener(changeListener);
 	}
-
-	// ===================================================
-	// GUI set up
-	// ===================================================
 
 	public void addInstructions(JPanel ip, String jpg) {
 
@@ -406,10 +381,6 @@ public class GenLab extends JApplet implements ComponentListener {
 		ip.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 		ip.add(instructions);
 	}
-
-	// ===================================================
-	// Get experiment variables
-	// ===================================================
 
 	/**
 	 * Initializes the variables used to run the experiment.
@@ -506,6 +477,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	 * Should be called from the 'Start/Abort Experiment' button on the Run Panel.  
 	 */
 	public void runPressed() {
+		System.out.println("PRESSED! Running is " + runningExperiment);
 		if (runningExperiment) 
 			abortExperiment();
 		else
@@ -525,6 +497,8 @@ public class GenLab extends JApplet implements ComponentListener {
 		runP.instructionsJB.setVisible(false);
 		runP.startJB.setText("Abort Experiment");
 		runP.promptJL.setText("");
+		runP.startJB.repaint();
+		runP.promptJL.repaint();
 
 		timer1a = new Timer(0, timer1aAction);
 		timer1b = new Timer(5000, timer1bAction);
@@ -576,6 +550,9 @@ public class GenLab extends JApplet implements ComponentListener {
 
 
 	public void printResults() {
+
+		tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),true);
+		
 		char[] arrayOfLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			.toCharArray();
 		char[] arrayOfNumbers = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };

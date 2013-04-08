@@ -5,82 +5,155 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+
+import core.GenLab;
 import net.miginfocom.swing.MigLayout;
 
 
 public class IntroPanel extends JPanel {
 
-	JButton createExperiment,loadExperiment;
-	private JTabbedPane tabbedPane;
+	private JButton createExperimentJB, loadExperimentJB,
+					loadScriptJB, loadJsonJB, loadServerJB,
+					createScriptJB, createFancyJB,
+					backToIntroJB;
 	
-	public IntroPanel(JTabbedPane pane){
-		
-		this.tabbedPane = pane;
-		
-		createExperiment = new JButton("Create a new\n Experiment");
-		loadExperiment = new JButton("Load an Existing\n Experiment");
-		
-		createExperiment.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				showCreateButtons();
-			}
-		});
-		loadExperiment.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				showLoadButtons();
-			}
-		});
-		
+	public IntroPanel(){
+		setupButtons();
 		this.setBackground(new Color(200,200,200));
-		MigLayout lay = new MigLayout();
-		this.setLayout(lay);
-		this.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-		//this.add(new JLabel("Please choose an option."),"span 2,align center,wrap");
-		this.add(createExperiment,"push,w 200!, h 100!,align right");
-		this.add(loadExperiment,"w 200!, h 100!,align left,push");
+		doIntroMenu();
 	}
-	
-	private void switchToTab(int i) {
-		tabbedPane.setSelectedIndex(i);
-	}
-	
-	private void showLoadButtons()
-	{
-		this.remove(createExperiment);
-		this.remove(loadExperiment);
-		
-		///Create server,JSON,and script load buttons/listeners
-		JButton loadScriptJB = new JButton("Load from Script file");
-		loadScriptJB.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
-		});
-		JButton loadJsonJB = new JButton("Load from JSON file");
-		loadJsonJB.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
-		});
-		JButton loadServerJB = new JButton("Load from the server");
-		loadServerJB.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-			}
-		});
-		///Add them to the layout
-		this.add(new JLabel("Choose an option..."),"wrap");
-		this.add(loadScriptJB,"w 200!, h 100!");
-		this.add(loadJsonJB,"w 200!, h 100!");
-		this.add(loadServerJB,"w 200!, h 100!");
+
+	public void doIntroMenu() {
+		this.removeAll();
+		MigLayout layout = new MigLayout("align center","push[][]push","push[][][]push");
+		this.setLayout(layout);	
+		this.add(new JLabel("Choose an option..."),"cell 0 0,span 2,align center");
+		this.add(createExperimentJB,"cell 0 1,w 200!, h 100!,align right");
+		this.add(loadExperimentJB,"cell 1 1,w 200!, h 100!,align left,push");
 		this.repaint();
 	}
 	
-	private void showCreateButtons()
-	{
-		//switchToTab(3);
+	private void doVertLoadMenu() {
+		this.removeAll();
+		MigLayout lay = new MigLayout("align center","push[][]push","push[][][]push");
+		this.setLayout(lay);
+		
+		///Setup layout
+		this.add(backToIntroJB,"cell 0 1,w :180, h 65!,align right");
+
+		this.add(loadScriptJB,	"cell 1 0,w :200:, h 75!");
+		this.add(loadJsonJB,	"cell 1 1,w :200:, h 75!");
+		this.add(loadServerJB,	"cell 1 2,w :200:, h 75!");
+		
+	//	this.add(backToIntroJB,"dock south, h 40!,align center");
+
+		this.repaint();
 	}
 	
+	private void doCreateMenu()
+	{
+		this.removeAll();
+		MigLayout lay = new MigLayout("align center","push[][]push","push[][]push");
+		this.setLayout(lay);
+		
+		///Setup layout
+		this.add(backToIntroJB,	"cell 1 0,spany 2,w :180, h 75!,align right");
+		this.add(createScriptJB,"cell 0 0,w :200:, h 75!");
+		this.add(createFancyJB,	"cell 0 1,w :200:, h 75!");
+		
+	//	this.add(backToIntroJB,"dock south, h 40!,align center");
+
+		this.repaint();
+	}
+	
+	private void doHorzLoadMenu()
+	{
+		this.removeAll();
+		MigLayout lay = new MigLayout("align center","push[][][]push","push[]20[][]push");
+		this.setLayout(lay);
+		
+		///Setup layout
+		this.add(new JLabel("Choose an option..."),"cell 1 0, wrap,align center");
+		this.add(loadScriptJB,"cell 0 1,w :200:, h 75!");
+		this.add(loadJsonJB,"cell 1 1,w :200:, h 75!");
+		this.add(loadServerJB,"cell 2 1,w :200:, h 75!,wrap");
+		this.add(backToIntroJB,"cell 0 2, span 3, h 40!,align center");
+
+		this.repaint();
+	}
+	
+
+	
+	
+	private void switchToTab(int i) {
+		GenLab.getInstance().tabbedPane.setSelectedIndex(i);
+	}
+	
+	private void setupButtons() {
+		//'''Top Level Buttons
+		createExperimentJB = new JButton("Create a new\n Experiment");
+		createExperimentJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				doCreateMenu();
+			}
+		});
+		loadExperimentJB = new JButton("Load an Existing\n Experiment");
+		loadExperimentJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				doVertLoadMenu();
+			}
+		});
+		//'''Create Buttons
+		createScriptJB = new JButton("Use old script creator");
+		createScriptJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				switchToTab(2);
+			}
+		});
+		createFancyJB = new JButton("Use new script creator");
+		createFancyJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+											  "Not yet implemented.",
+											  "", 
+											  JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		//'''Load Buttons
+		loadScriptJB = new JButton("Load from Script file");
+		loadScriptJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				switchToTab(4);
+			}
+		});
+		loadJsonJB = new JButton("Load from JSON file");
+		loadJsonJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+											  "Not yet implemented.",
+											  "", 
+											  JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		loadServerJB = new JButton("Load from the server");
+		loadServerJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+											  "Not yet implemented.",
+											  "", 
+											  JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		//'''Back Button
+		backToIntroJB = new JButton("Nevermind, take me back.");
+		backToIntroJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				doIntroMenu();
+			}
+		});
+	}
+
 }

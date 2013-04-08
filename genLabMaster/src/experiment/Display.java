@@ -3,8 +3,6 @@ package experiment;
 import java.awt.Dimension;
 import java.awt.Point;
 
-
-
 public class Display {
 	
 	public static enum DisplayType {TEXT,IMAGE,SOUND,VIDEO;
