@@ -3,7 +3,9 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.font.TextAttribute;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.sound.sampled.Clip;
@@ -25,9 +28,28 @@ import experiment.Experiment;
 import experiment.Trial;
 import experiment.Display.DisplayType;
 import experiment.Display.PositionType;
-import gui.ExptVarsPanel;
+import gui.ScriptSetupPanel;
 import gui.PresentationPanel;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class ExperimentUtilities {
 
@@ -38,9 +60,115 @@ public class ExperimentUtilities {
 	 * @param varsP
 	 * @return
 	 */
+	
+	@SuppressWarnings("serial")
+	abstract class PointMixIn extends Point{
+		@Override
+		@JsonIgnore abstract public Point getLocation();
+	}
+	
+	@SuppressWarnings("serial")
+	@JsonAutoDetect(fieldVisibility=Visibility.NONE,
+					getterVisibility=Visibility.NONE,
+					setterVisibility=Visibility.NONE)
+	@JsonIgnoreProperties({ "bold", "italic", "plain","transformed" })
+	abstract class FontMixIn{
+		
+		@JsonCreator
+		public FontMixIn(@JsonProperty("name")String name,@JsonProperty("style")int style,@JsonProperty("size")int size) 
+		{
+			//super(name,style,size);
+		}
+		
+		@JsonProperty("name")
+		public String name;
+		@JsonProperty("style")
+		public int style;
+		@JsonProperty("size")
+		public int size;
+		
+	}
+	
+	class FontJsonDeserializer extends JsonDeserializer<Font>
+	{
+	@Override
+	public Font deserialize(JsonParser jp, DeserializationContext arg1) throws IOException, JsonProcessingException {
+		String fontName = "";
+		int size = -1;
+		int style = 1;
+		while(jp.nextToken() != JsonToken.END_OBJECT)
+		{
+			String currField = jp.getCurrentName();
+			jp.nextToken();
+			if ("name".equalsIgnoreCase(currField))
+				fontName = jp.getText();
+			else if ("style".equalsIgnoreCase(currField))
+				style = jp.getIntValue();
+			else if ("size".equalsIgnoreCase(currField))
+				size = jp.getIntValue();
+		}
+		if (size != -1 && style != -1 && !fontName.equals(""))
+		{
+			System.out.println("Parsed a font! " + fontName + " "+ style +  " " + size);
+			return new Font(fontName,style,size);
+		}
+		else{
+			System.err.println("Error parsing JSON Font!");
+			return null;			
+		}
+
+	}
+	}
+	
+	
+	public static Experiment loadJsonExperiment(String filename)
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		
+		mapper.addMixInAnnotations(Point.class, PointMixIn.class);
+		mapper.addMixInAnnotations(Font.class, FontMixIn.class);
+		FontJsonDeserializer fontD = (new ExperimentUtilities()).new FontJsonDeserializer();
+		SimpleModule myModule = new SimpleModule("MyModule");
+		myModule.addDeserializer(Font.class, fontD);
+		mapper.registerModule(myModule);
+		
+		Experiment ex = null;
+		try
+		{
+			ex = mapper.readValue(new File(filename), Experiment.class);
+			System.out.println("EX font size is " +ex.blocks.get(0).font.getSize());
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return ex;
+	}
+	
+	public static void experimentToJson(Experiment ex, String filename)
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		mapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
+		mapper.addMixInAnnotations(Point.class, PointMixIn.class);
+		mapper.addMixInAnnotations(Font.class, FontMixIn.class);
+
+		try
+		{
+			mapper.writeValue(new File(filename),ex);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public static Experiment loadScriptExperiment()
 	{
-		ExptVarsPanel varsP = GenLab.getInstance().exptVarsP;
 		Experiment ex = new Experiment();
 		Block block = new Block(); //Default Block
 		ex.blocks.add(block);
@@ -54,12 +182,12 @@ public class ExperimentUtilities {
 		success = loadSettingsFromExptPanel(ex);
 		if (!success)
 			return null;
-		
 		return ex;
 	}
+	
 	private static boolean initializeScriptExperiment(Experiment ex)
 	{
-		ExptVarsPanel exptVarsP = GenLab.getInstance().exptVarsP;
+		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;
 		Block block = ex.blocks.get(0);
 		ex.scriptFilename = exptVarsP.getScript();
 		if (ex.scriptFilename.equals("")) {
@@ -317,7 +445,8 @@ public class ExperimentUtilities {
 //					oneDisplay.buildDisplay(stimulusType, textOrPath,
 //							thePosition, hPosition, vPosition, theDuration);
 					Display disp = new Display(displayType,PositionType.getValueOf(thePosition.toUpperCase()),textOrPath,duration);
-					disp.setPosition(hPosition,vPosition);
+				//	disp.setPosition(new java.awt.Point(hPosition,vPosition));
+					disp.position = new java.awt.Point(hPosition,vPosition);
 					displays[i] = disp;
 				}
 				Trial oneTrial = new Trial(correctKeyString,trialType,displays);
@@ -336,7 +465,7 @@ public class ExperimentUtilities {
 	}
 	private static boolean loadSettingsFromExptPanel(Experiment ex)
 	{
-		ExptVarsPanel exptVarsP = GenLab.getInstance().exptVarsP;
+		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;
 
 		// Replicate each trial based on reps number
 		int reps = ex.blocks.get(0).reps;

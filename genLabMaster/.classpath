@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="jackson-annotations-2.1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="jackson-databind-2.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="jackson-core-2.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="miglayout-4.0-swing.jar"/>
 	<classpathentry kind="src" path="src"/>

@@ -29,13 +29,13 @@ import experiment.Experiment;
 import experiment.Trial;
 import experiment.Display.DisplayType;
 import experiment.Display.PositionType;
-import gui.ExptVarsPanel;
+import gui.ScriptSetupPanel;
 import gui.IntroPanel;
 import gui.LoadPanel;
 import gui.PresentationPanel;
 import gui.ResultsPanel;
 import gui.RunPanel;
-import gui.TrialVarsPanel;
+import gui.ScriptCreatorPanel;
 
 //import javax.media.bean.playerbean.MediaPlayer;
 
@@ -50,8 +50,8 @@ public class GenLab extends JApplet implements ComponentListener {
 	//'''GUI Components
 	public JTabbedPane tabbedPane;
 	public JPanel instruct1Panel, instruct2Panel;
-	public TrialVarsPanel trialVarsP;
-	public ExptVarsPanel exptVarsP;
+	public ScriptCreatorPanel trialVarsP;
+	public ScriptSetupPanel exptVarsP;
 	public RunPanel runP;
 	public ResultsPanel resultsP;
 	public IntroPanel introP;
@@ -116,8 +116,8 @@ public class GenLab extends JApplet implements ComponentListener {
 		instruct2Panel.setBackground(Color.white);
 		instructionsScreen2Path = "genlabInstr2.jpg";
 		addInstructions(instruct2Panel, instructionsScreen2Path);
-		trialVarsP = new TrialVarsPanel();
-		exptVarsP = new ExptVarsPanel();
+		trialVarsP = new ScriptCreatorPanel();
+		exptVarsP = new ScriptSetupPanel();
 		runP = new RunPanel();
 		resultsP = new ResultsPanel();
 		introP = new IntroPanel();
@@ -128,6 +128,15 @@ public class GenLab extends JApplet implements ComponentListener {
 		setupTabbedPane();
 		getContentPane().add(tabbedPane);
 		
+		/// Setup LAF
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		setupTimerAndKeyActions();
 	}
 	
@@ -147,8 +156,8 @@ public class GenLab extends JApplet implements ComponentListener {
 				PositionType pt = currentDisplay.getPositionType();
 
 				if (pt.equals(PositionType.EXACT)) {
-					hVal = currentDisplay.getPosition().x;
-					vVal = currentDisplay.getPosition().y;
+					hVal = currentDisplay.position.x;
+					vVal = currentDisplay.position.y;
 				} else if (pt.equals(PositionType.CENTER)) {
 					hVal = -1;
 					vVal = -1;
@@ -337,11 +346,10 @@ public class GenLab extends JApplet implements ComponentListener {
 	 */
 	private void setupTabbedPane() {
 		tabbedPane.addTab("Welcome", introP);
-		tabbedPane.addTab("Instructions", instruct1Panel);
-		tabbedPane.addTab("Instructions", instruct1Panel);
-		tabbedPane.addTab("Create Trials", null, trialVarsP,
+		tabbedPane.addTab("Script Creation Help", instruct1Panel);
+		tabbedPane.addTab("Create Script", null, trialVarsP,
 				"Set trial details and create a script file");
-		tabbedPane.addTab("Instructions", instruct2Panel);
+		tabbedPane.addTab("Script Setup Help", instruct2Panel);
 		tabbedPane.addTab("Set up Experiment", null, exptVarsP,
 				"Set experiment variables");
 		tabbedPane.addTab("Run Experiment", runP);
@@ -360,7 +368,9 @@ public class GenLab extends JApplet implements ComponentListener {
 				}
 				else if (c instanceof RunPanel)
 				{
-					setupExperimentFromOldScript();
+					//TODO: Find a better way to load the experiment from script (aka on page)
+					if (experiment == null) //Hasn't been setup by JSON.
+						setupExperimentFromOldScript();
 					int runIndex = tabbedPane.indexOfComponent(runP);
 					tabbedPane.setEnabledAt(runIndex,true);
 				}
@@ -406,14 +416,13 @@ public class GenLab extends JApplet implements ComponentListener {
 		// includeAllNumbers = false;
 	}
 	
-	private boolean setupExperimentFromOldScript()
+	public boolean setupExperimentFromOldScript()
 	{
 		experiment = ExperimentUtilities.loadScriptExperiment();
 		if (experiment != null) 
 		{
+			ExperimentUtilities.experimentToJson(experiment, "first_test.json");
 			prepRunPanel();
-			runP.startJB.setEnabled(true);
-			runP.startJB.setToolTipText("Begin the experiment.");
 			return true;
 		} 
 		else
@@ -423,16 +432,48 @@ public class GenLab extends JApplet implements ComponentListener {
 			return false;
 		}
 	}
+	
+	public boolean setupExperimentFromJson()
+	{
+		String filename = "";
+		JFileChooser jfc = new JFileChooser(".");
+		//File dir1 = new File(System.getProperty("user.dir"));
+		//jfc.setCurrentDirectory(dir1);
+		int userchoice = jfc.showOpenDialog(this);
+		if (userchoice == JFileChooser.APPROVE_OPTION){
+			filename = jfc.getSelectedFile().getAbsolutePath();
+		}
+		else
+		{
+			//TODO: Improve this error catch to JDialog for front end user
+			System.err.println("OOPS, failed on filechooser, no approve option.");
+			return false;
+		}
+		experiment = ExperimentUtilities.loadJsonExperiment(filename);
+		if (experiment != null) 
+		{
+			prepRunPanel();
+			return true;
+		} 
+		else
+		{
+			//TODO: Remove this, as it should already be the case.
+			runP.startJB.setEnabled(false);
+			runP.startJB.setToolTipText("Error loading script from JSON.");
+			return false;
+		}
+	}
+
 
 	/**
 	 * Prepare the presentation panel based a loaded experiment.
+	 * TODO: Move this to Run Panel 
 	 */
-	public void prepRunPanel()
-	{
+	public void prepRunPanel() {
 		runP.presPan.mediaPlayerVector.removeAllElements();
 		runP.presPan.videoNameVector.removeAllElements();
 		runP.presPan.videoPanCtr = 0;
-		
+
 		runP.getInputMap().clear();
 		runP.getActionMap().clear();
 		runP.presPan.videoPanCtr = 0;
@@ -444,23 +485,18 @@ public class GenLab extends JApplet implements ComponentListener {
 
 				for (int j = 0; j < 26; j++) {
 
-					runP.getInputMap().put(
-							KeyStroke.getKeyStroke("abcdefghijklmnopqrstuvwxyz".charAt(j)),
-							"doKeyAction");
+					runP.getInputMap().put(KeyStroke.getKeyStroke("abcdefghijklmnopqrstuvwxyz".charAt(j)), "doKeyAction");
 					runP.getActionMap().put("doKeyAction", this.keyAction);
 				}
 
 			} else if (c == '#') {
 				for (int j = 0; j < 10; j++) {
-					runP.getInputMap().put(
-							KeyStroke.getKeyStroke("" + j),
-							"doKeyAction");
+					runP.getInputMap().put(KeyStroke.getKeyStroke("" + j), "doKeyAction");
 					runP.getActionMap().put("doKeyAction", this.keyAction);
 				}
 
 			} else {
-				runP.getInputMap()
-						.put(KeyStroke.getKeyStroke(c), "doKeyAction");
+				runP.getInputMap().put(KeyStroke.getKeyStroke(c), "doKeyAction");
 				runP.getActionMap().put("doKeyAction", this.keyAction);
 			}
 		}
@@ -470,6 +506,9 @@ public class GenLab extends JApplet implements ComponentListener {
 		} else {
 			runP.instructionsJB.setVisible(true);
 		}
+		
+		runP.startJB.setEnabled(true);
+		runP.startJB.setToolTipText("Begin the experiment.");
 	}
 
 	/**
@@ -537,7 +576,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 		currTrial = (Trial) currBlock.trials.get(trialCtr);
 
-		currDisplays = new Vector(currTrial.displays);
+		currDisplays = currTrial.displays;
 
 		// timer1b.setDelay((int)(((OneDisplay)oneTrialVector.elementAt(displayCtr)).durationInSecs
 		// * 1000));
@@ -842,8 +881,6 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	public void varError(int errorNum, String errorString) {
 
-		JDialog.setDefaultLookAndFeelDecorated(true);
-
 		String[] errStrings = new String[] { // indexed by errorNum
 				"No script name specified.",
 				"Must have at least 1 repetition of trials.",
@@ -873,8 +910,6 @@ public class GenLab extends JApplet implements ComponentListener {
 
 }
 
-
-
 class Response {
 
 	String trialType = "";
@@ -882,8 +917,7 @@ class Response {
 	String userResponseKey = "";
 	double responseTime = 0;
 
-	public Response(String trialType, String correctKey,
-			String userResponseKey, double responseTime) {
+	public Response(String trialType, String correctKey, String userResponseKey, double responseTime) {
 		this.trialType = trialType;
 		this.correctKey = correctKey;
 		this.userResponseKey = userResponseKey;

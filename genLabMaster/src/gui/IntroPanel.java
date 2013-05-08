@@ -87,7 +87,11 @@ public class IntroPanel extends JPanel {
 	
 
 	
-	
+	/**
+	 * Switches to a given tab.
+	 * TODO: Rewrite this using the Panels instead of indexes to avoid errors.
+	 * @param i
+	 */
 	private void switchToTab(int i) {
 		GenLab.getInstance().tabbedPane.setSelectedIndex(i);
 	}
@@ -132,10 +136,8 @@ public class IntroPanel extends JPanel {
 		loadJsonJB = new JButton("Load from JSON file");
 		loadJsonJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(GenLab.getInstance(),
-											  "Not yet implemented.",
-											  "", 
-											  JOptionPane.ERROR_MESSAGE);
+				GenLab.getInstance().setupExperimentFromJson();
+				switchToTab(5);
 			}
 		});
 		loadServerJB = new JButton("Load from the server");

@@ -7,18 +7,31 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 public class Trial implements Iterable<Display> {
 
 	public String correctKey;
 	public String trialType;
+	//@JsonManagedReference
 	public List<Display> displays;
-	public Block parent;
+	//@JsonBackReference
+	//public Block parent;
 	
 	//Configuration Vars
 	public Boolean randomizeDisplayOrder;
 
-
+	/**
+	 * Default constructor to help make Jackson (JSON library for save/load) happy.
+	 */
+	public Trial()
+	{
+		
+	}
+	
 	public Trial(String correctKey, String trialType, Display[] displays) {
 		this(correctKey,trialType,new ArrayList<Display>(Arrays.asList(displays)));
 	}
@@ -29,13 +42,13 @@ public class Trial implements Iterable<Display> {
 		this.displays = displays;
 	}
 
-	public void setParent(Block parent) {
-		this.parent = parent;
-	}
-
-	public Block getParent() {
-		return parent;
-	}
+//	public void setParent(Block parent) {
+//		this.parent = parent;
+//	}
+//
+//	public Block getParent() {
+//		return parent;
+//	}
 
 	@Override
 	public Iterator<Display> iterator() {

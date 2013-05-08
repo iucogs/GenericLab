@@ -3,6 +3,12 @@ package experiment;
 import java.awt.Dimension;
 import java.awt.Point;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class Display {
 	
 	public static enum DisplayType {TEXT,IMAGE,SOUND,VIDEO;
@@ -48,15 +54,25 @@ public class Display {
 	-Duration(ms)
 	-Persists(Default 0.  is how long in ms to keep the Display on the screen after the duration has expired, meaning the next display will be shown)
 	*/
-	public Trial parent;
+	
+	//@JsonBackReference
+	//public Trial parent;
 	
 	private DisplayType displayType;
 	private PositionType positionType;
-	private String textOrPath;  // Is built from experiment.directory + (filename of this resource)
-	private Point position = new Point(0,0);
-	private Dimension randomOffset = new Dimension(0,0);
-	private double durationSecs;  //in seconds
-	private double persistTime = 0.000;  //in seconds
+	private String textOrPath; // Is built from experiment.directory + (filename of this resource)
+	public Point position = new Point(30,30);
+	public Dimension randomOffset = new Dimension(0,0);
+	private double durationSecs; // in seconds
+	private double persistTime = 0.000; // in seconds
+
+	/**
+	 * Simple default constructor to make Jackson happy.
+	 */
+	public Display()
+	{
+
+	}
 	
 	public Display(DisplayType dt, PositionType pt, String textOrFilename, double durationInSecs)
 	{
@@ -65,23 +81,28 @@ public class Display {
 		this.textOrPath = textOrFilename;
 		this.durationSecs = durationInSecs;
 		this.persistTime = 0;
-	}
-	
-	public void setPosition(int xPos, int yPos) {
-		this.position = new Point(xPos,yPos);
+		this.position = new Point(0,0);
+		this.randomOffset = new Dimension(0,0);
 	}
 	
 	public void setPosition (Point newPos)
 	{
-		this.position = newPos;
+		position.move(newPos.x, newPos.y);
+	//	this.position = new Point(newPos.x, newPos.y);
 	}
 	
+	public Point getPosition() {
+		return position;
+	}
+	//TODO: get this working (need custom serializer or mixin like for Point)
+	@JsonIgnore
 	public void setRandomOffset(int xOffset, int yOffset) {
-		this.randomOffset = new Dimension(xOffset, yOffset);
+		this.randomOffset.setSize(xOffset,yOffset);
 	}
-	
+	@JsonIgnore
 	public Dimension getRandomOffset() {
 		return randomOffset;
+		
 	}
 
 	public void setDurationSecs(double durationSecs) {
@@ -99,10 +120,6 @@ public class Display {
 	}
 
 
-	public Point getPosition() {
-		return position;
-	}
-
 	public void setPositionType(PositionType pt) {
 		this.positionType = pt;
 	}
@@ -118,14 +135,15 @@ public class Display {
 	public PositionType getPositionType() {
 		return positionType;
 	}
-
+	public DisplayType getDisplayType() {
+		return displayType;
+	}
+	
+	
 	public String getTextOrPath() {
 		return textOrPath;
 	}
 
-	public DisplayType getDisplayType() {
-		return displayType;
-	}
 	
 	
 	

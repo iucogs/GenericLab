@@ -1,4 +1,5 @@
 package gui;
+
 import java.lang.*;
 import java.util.*;
 import java.awt.*;
@@ -42,8 +43,7 @@ import java.net.MalformedURLException;
 
 public class PresentationPanel extends JPanel {
 
-
-//	boolean xhair, eotMsg, dot;
+	// boolean xhair, eotMsg, dot;
 	int centerxpoint, centerypoint;
 	boolean dot = false;
 	boolean word = false;
@@ -56,84 +56,85 @@ public class PresentationPanel extends JPanel {
 	Vector thisTrial;
 
 	int hVal = 0, vVal = 0, horiz = 0, vert = 0;
-	
+
 	Dimension d2;
 	boolean leaveDisplayOn = false;
 
-	//JPanel videoPan;
+	// JPanel videoPan;
 
-    //    MediaPlayer mediaPlayer, mediaPlayer1;
-//        Player player, mediaPlayer2;
-        Component videoComponent;
-        vlcjPlayer videoPlayer;
-        public  Vector videoPanVector = new Vector();
-        public   Vector mediaPlayerVector = new Vector();
-        public Vector videoNameVector = new Vector();
-    //    Vector realizedPlayerVector;
-        public   int videoPanCtr = 0;
+	// MediaPlayer mediaPlayer, mediaPlayer1;
+	// Player player, mediaPlayer2;
+	Component videoComponent;
+	vlcjPlayer videoPlayer;
+	public Vector videoPanVector = new Vector();
+	public Vector mediaPlayerVector = new Vector();
+	public Vector videoNameVector = new Vector();
+	// Vector realizedPlayerVector;
+	public int videoPanCtr = 0;
 
-
-	public PresentationPanel(){
-		///Init Vars
-		thisTrial = new Vector();		
-		///Setup GUI
+	public PresentationPanel() {
+		// /Init Vars
+		thisTrial = new Vector();
+		// /Setup GUI
 		setBackground(Color.white);
 		setForeground(Color.black);
 		d2 = new Dimension(780, 450);
 		setSize(d2);
 		setPreferredSize(d2);
 		setBorder(BorderFactory.createLineBorder(Color.black));
-                setLayout(null);
-		float paneWidth = (float)(getSize().getWidth());
-		float paneHeight = (float)(getSize().getHeight());
+		setLayout(null);
+		float paneWidth = (float) (getSize().getWidth());
+		float paneHeight = (float) (getSize().getHeight());
 		float centery = (paneHeight) / 2;
 		centerypoint = Math.round(centery);
-		float centerx = (paneWidth ) / 2;
+		float centerx = (paneWidth) / 2;
 		centerxpoint = Math.round(centerx);
 		this.setVisible(true);
 	}
 
-        public void prepVideo(String filename)
-        {
-    //        JPanel tempPan;
-          //  int w = 117;
-           // int h = 80;
-         //   tempPan = new JPanel(new BorderLayout());
+	public void prepVideo(String filename) {
+		// JPanel tempPan;
+		// int w = 117;
+		// int h = 80;
+		// tempPan = new JPanel(new BorderLayout());
 
-        //    tempPan.setBackground(Color.red);
-       //     videoPanVector.addElement(tempPan);
-       //     this.add((JPanel)videoPanVector.lastElement());
-            URL mediaURL = null;
-            try {
-        //       mediaURL = new URL("file:/C:/Users/reberle/Documents/Fig21_06_07/Fig21_06_07/" + filename);
-                mediaURL = new URL("file:/" + filename);
-            }
-            catch (MalformedURLException e) { }
+		// tempPan.setBackground(Color.red);
+		// videoPanVector.addElement(tempPan);
+		// this.add((JPanel)videoPanVector.lastElement());
+		URL mediaURL = null;
+		try {
+			// mediaURL = new
+			// URL("file:/C:/Users/reberle/Documents/Fig21_06_07/Fig21_06_07/" +
+			// filename);
+			mediaURL = new URL("file:/" + filename);
+		} catch (MalformedURLException e) {
+		}
 
+		// try
+		// {
+		// create a player to play the media specified in the URL
 
-//    try
-          //  {
-         // create a player to play the media specified in the URL
+		// mediaPlayer = new MediaPlayer();
 
-    //        mediaPlayer = new MediaPlayer();
-            
-      //      mediaPlayer.setMediaLocation(new java.lang.String("file:/" + filename));
-             //  mediaPlayer.setMediaLocation(new java.lang.String("file:/C:/Users/reberle/Documents/Fig21_06_07/Fig21_06_07/" + filename));
+		// mediaPlayer.setMediaLocation(new java.lang.String("file:/" +
+		// filename));
+		// mediaPlayer.setMediaLocation(new
+		// java.lang.String("file:/C:/Users/reberle/Documents/Fig21_06_07/Fig21_06_07/"
+		// + filename));
 
-       //     mediaPlayer.realize();
-        
-   //         mediaPlayer.prefetch();
-    //        mediaPlayerVector.addElement(mediaPlayer);
- 
-        }
+		// mediaPlayer.realize();
 
+		// mediaPlayer.prefetch();
+		// mediaPlayerVector.addElement(mediaPlayer);
+
+	}
 
 	public void paintComponent(Graphics g) {
 
-		Graphics2D g2 = (Graphics2D)g;
+		Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
 
-		Font thisFont = new Font (fontFace, Font.BOLD, fontSize);
+		Font thisFont = new Font(fontFace, Font.BOLD, fontSize);
 		g2.setFont(thisFont);
 		FontMetrics metrics = g2.getFontMetrics(thisFont);
 
@@ -141,30 +142,27 @@ public class PresentationPanel extends JPanel {
 			int strw = metrics.stringWidth(theWord);
 			int strh = metrics.getHeight();
 			int leading = metrics.getLeading();
-			if (hVal == -1) {  //center
-				hVal = (int)((d2.getWidth() / 2) - (strw / 2));
-				vVal = (int)((d2.getHeight() / 2) + (strh / 2));
-			}
-			else if (hVal == -2) { //random
+			if (hVal == -1) { // center
+				hVal = (int) ((d2.getWidth() / 2) - (strw / 2));
+				vVal = (int) ((d2.getHeight() / 2) + (strh / 2));
+			} else if (hVal == -2) { // random
 				Random rand = new Random();
 
-//				int hValTemp = rand.nextInt(horiz - strw);
-//				int vValTemp = rand.nextInt(vert - strh);
-//
-//				hVal = (int)((d2.getWidth() / 2) - (horiz / 2) + hValTemp);
-//				vVal = (int)((d2.getHeight() / 2) + (vert / 2) - vValTemp);
+				// int hValTemp = rand.nextInt(horiz - strw);
+				// int vValTemp = rand.nextInt(vert - strh);
+				//
+				// hVal = (int)((d2.getWidth() / 2) - (horiz / 2) + hValTemp);
+				// vVal = (int)((d2.getHeight() / 2) + (vert / 2) - vValTemp);
 
-                                int hValTemp = rand.nextInt(horiz);
+				int hValTemp = rand.nextInt(horiz);
 				int vValTemp = rand.nextInt(vert);
 
-				hVal = (int)((d2.getWidth() / 2) - (horiz / 2) + hValTemp - strw/2);
-				vVal = (int)((d2.getHeight() / 2) + (vert / 2) - vValTemp - strh/2);
+				hVal = (int) ((d2.getWidth() / 2) - (horiz / 2) + hValTemp - strw / 2);
+				vVal = (int) ((d2.getHeight() / 2) + (vert / 2) - vValTemp - strh / 2);
 
-			}
-			else {
+			} else {
 				vVal += strh;
 			}
-
 
 			if (leaveDisplayOn) {
 
@@ -172,11 +170,10 @@ public class PresentationPanel extends JPanel {
 
 					for (int i = 0; i < thisTrial.size(); i++) {
 
-						PresPanelDisplay p = (PresPanelDisplay)thisTrial.elementAt(i);
+						PresPanelDisplay p = (PresPanelDisplay) thisTrial.elementAt(i);
 						if (p.pp_itemDisplayed.equals("kqlkql")) {
 							g2.drawImage(p.pp_theImage, p.pp_hVal, p.pp_vVal, null);
-						}
-						else {
+						} else {
 							g2.drawString(p.pp_itemDisplayed, p.pp_hVal, p.pp_vVal);
 						}
 					}
@@ -192,13 +189,12 @@ public class PresentationPanel extends JPanel {
 			}
 			g2.drawString(theWord, hVal, vVal);
 			word = false;
-		}
-		else if (picture) {
+		} else if (picture) {
 			Image img = Toolkit.getDefaultToolkit().getImage(thePicture);
 			try {
-  			  MediaTracker tracker = new MediaTracker(this);
-  			  tracker.addImage(img, 0);
-                          tracker.waitForID(0);
+				MediaTracker tracker = new MediaTracker(this);
+				tracker.addImage(img, 0);
+				tracker.waitForID(0);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -206,24 +202,22 @@ public class PresentationPanel extends JPanel {
 			int width = img.getWidth(this);
 			int height = img.getHeight(this);
 
-
-			if (hVal == -1) {  //center
+			if (hVal == -1) { // center
 				System.out.println("Drawing centered");
-				hVal = (int)((d2.getWidth() / 2) - (width / 2));
-				vVal = (int)((d2.getHeight() / 2) - (height / 2));
-			}
-			else if (hVal == -2) {  //random
+				hVal = (int) ((d2.getWidth() / 2) - (width / 2));
+				vVal = (int) ((d2.getHeight() / 2) - (height / 2));
+			} else if (hVal == -2) { // random
 				Random rand = new Random();
 
-                                int hValTemp = rand.nextInt(horiz);
+				int hValTemp = rand.nextInt(horiz);
 				int vValTemp = rand.nextInt(vert);
 
-				hVal = (int)((d2.getWidth() / 2) - (horiz / 2) + hValTemp - width/2);
-				vVal = (int)((d2.getHeight() / 2) + (vert / 2) - vValTemp - height/2);
+				hVal = (int) ((d2.getWidth() / 2) - (horiz / 2) + hValTemp - width / 2);
+				vVal = (int) ((d2.getHeight() / 2) + (vert / 2) - vValTemp - height / 2);
 			}
-//			BufferedImage bi = new BufferedImage(width, height,
-//			BufferedImage.TYPE_INT_RGB);
-//			Graphics2D biContext = bi.createGraphics();
+			// BufferedImage bi = new BufferedImage(width, height,
+			// BufferedImage.TYPE_INT_RGB);
+			// Graphics2D biContext = bi.createGraphics();
 
 			if (leaveDisplayOn) {
 
@@ -231,13 +225,11 @@ public class PresentationPanel extends JPanel {
 
 					for (int i = 0; i < thisTrial.size(); i++) {
 
-						PresPanelDisplay p = (PresPanelDisplay)thisTrial.elementAt(i);
+						PresPanelDisplay p = (PresPanelDisplay) thisTrial.elementAt(i);
 						if (p.pp_itemDisplayed.equals("kqlkql")) {
 							g2.drawImage(p.pp_theImage, p.pp_hVal, p.pp_vVal, null);
 
-
-						}
-						else {
+						} else {
 							g2.drawString(p.pp_itemDisplayed, p.pp_hVal, p.pp_vVal);
 						}
 					}
@@ -253,155 +245,149 @@ public class PresentationPanel extends JPanel {
 			picture = false;
 		}
 
+	}
+
+	public void clearVector() {
+		thisTrial.removeAllElements();
+	}
+
+	public void clearMediaPlayer() {
+		if (video == true) {
+			// ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).stop();
+			// this.remove(((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)));
+			// ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr-1)).close();
+			video = false;
+		}
+	}
+
+	public void drawDot() {
+
+		dot = true;
+		repaint();
+	}
+
+	public void drawWord(String theWord, String fontFace, int fontSize, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn) {
+
+		word = true;
+		this.theWord = theWord;
+		this.fontFace = fontFace;
+		this.fontSize = fontSize;
+		this.hVal = hVal;
+		this.vVal = vVal;
+		this.horiz = horiz;
+		this.vert = vert;
+		this.leaveDisplayOn = leaveDisplayOn;
+		repaint();
+	}
+
+	public void drawPicture(String thePicture, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn) {
+
+		picture = true;
+		this.thePicture = thePicture;
+		this.hVal = hVal;
+		this.vVal = vVal;
+		this.horiz = horiz;
+		this.vert = vert;
+		this.leaveDisplayOn = leaveDisplayOn;
+		repaint();
+	}
+
+	public void showVideo(String thePicture, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn) {
+		String mrl = "";
+		video = true;
+		this.hVal = hVal;
+		this.vVal = vVal;
+		this.horiz = horiz;
+		this.vert = vert;
+		this.leaveDisplayOn = leaveDisplayOn;
+		mrl = this.thePicture;
+
+		int tempIndex = videoNameVector.indexOf(thePicture);
+		if (tempIndex >= 0) {
+			videoPanCtr = tempIndex;
+		}
+
+		// videoComponent =
+		// ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).getVisualComponent();
+		// Dimension size = videoComponent.getPreferredSize();
+		// int width = (int)size.getWidth();
+		// int height = (int)size.getHeight();
+
+		int height = 200;
+		int width = 200;
+
+		this.setFocusable(true);
+
+		if (hVal == -1) { // center
+			hVal = (int) ((d2.getWidth() / 2) - (width / 2));
+			vVal = (int) ((d2.getHeight() / 2) - (height / 2));
+			// vVal += 20;
+		} else if (hVal == -2) { // random
+			Random rand = new Random();
+
+			int hValTemp = rand.nextInt(horiz);
+			int vValTemp = rand.nextInt(vert);
+
+			hVal = (int) ((d2.getWidth() / 2) - (horiz / 2) + hValTemp - width / 2);
+			vVal = (int) ((d2.getHeight() / 2) + (vert / 2) - vValTemp - height / 2);
+		}
+
+		// pjc
+		// videoPlayer = new vlcjPlayer(width, height, hVal, vVal);
+		// this.add(videoPlayer);
+		// this.setVisible(true);
+		// videoPlayer.setVisible(true);
+		// videoPlayer.play(mrl);
+
+		// ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).setBounds(hVal,vVal,width,height);
+
+		// this.add((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr));
+		// ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).start();
 
 	}
 
-		public void clearVector() {
-			thisTrial.removeAllElements();
-
-		}
-
-                public void clearMediaPlayer()  {
-                    if (video == true) {
-  //                      ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).stop();
-  //                     this.remove(((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)));
-                   //     ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr-1)).close();
-                        video = false;
-                    }
-                }
-
-
-		public void drawDot(){
-
-			dot = true;
-			repaint();
-		}
-		public void drawWord(String theWord, String fontFace, int fontSize, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn){
-
-			word = true;
-			this.theWord = theWord;
-			this.fontFace = fontFace;
-			this.fontSize = fontSize;
-			this.hVal = hVal;
-			this.vVal = vVal;
-			this.horiz = horiz;
-			this.vert = vert;
-			this.leaveDisplayOn = leaveDisplayOn;
-			repaint();
-	}
-		public void drawPicture(String thePicture, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn){
-
-			picture = true;
-			this.thePicture = thePicture;
-			this.hVal = hVal;
-			this.vVal = vVal;
-			this.horiz = horiz;
-			this.vert = vert;
-			this.leaveDisplayOn = leaveDisplayOn;
-			repaint();
-	}
-
-	public void showVideo(String thePicture, int hVal, int vVal, int horiz, int vert, boolean leaveDisplayOn)
-{
-			String mrl = "";
-			video = true;
-			this.hVal = hVal;
-			this.vVal = vVal;
-			this.horiz = horiz;
-			this.vert = vert;
-			this.leaveDisplayOn = leaveDisplayOn;
-			mrl = this.thePicture;
-
-                        int tempIndex = videoNameVector.indexOf(thePicture);
-                        if (tempIndex >=0) {
-                            videoPanCtr = tempIndex;
-                        }
-
-         //               videoComponent = ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).getVisualComponent();
-         //               Dimension size = videoComponent.getPreferredSize();
-		//	int width = (int)size.getWidth();
-		//  int height = (int)size.getHeight();
-
-                        int height = 200;
-                        int width = 200;
-
-                        this.setFocusable(true);
-          
-			if (hVal == -1) {  //center
-				hVal = (int)((d2.getWidth() / 2) - (width / 2));
-				vVal = (int)((d2.getHeight() / 2) - (height / 2));
-                            //    vVal += 20;
-			}
-			else if (hVal == -2) {  //random
-				Random rand = new Random();
-
-                                int hValTemp = rand.nextInt(horiz);
-				int vValTemp = rand.nextInt(vert);
-
-				hVal = (int)((d2.getWidth() / 2) - (horiz / 2) + hValTemp - width/2);
-				vVal = (int)((d2.getHeight() / 2) + (vert / 2) - vValTemp - height/2);
-			}
-             
-			// pjc
-		//	videoPlayer = new vlcjPlayer(width, height, hVal, vVal);
-		//	this.add(videoPlayer);
-		//	this.setVisible(true);
-		//	videoPlayer.setVisible(true);
-		//	videoPlayer.play(mrl);
-				
-
-//((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).setBounds(hVal,vVal,width,height);
- 
-//                        this.add((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr));
-//                        ((MediaPlayer)mediaPlayerVector.elementAt(videoPanCtr)).start();
-
-		}
-
-	public void eraseAll(){
-                    repaint();
-                    clearMediaPlayer();
+	public void eraseAll() {
+		repaint();
+		clearMediaPlayer();
 	}
 
 	public static Clip loadAudioClip(String filename) {
-			Clip clip = null;
-			try {
-				AudioInputStream stream = AudioSystem.getAudioInputStream(new File(
-						filename));
+		Clip clip = null;
+		try {
+			AudioInputStream stream = AudioSystem.getAudioInputStream(new File(filename));
 
-				// At present, ALAW and ULAW encodings must be converted
-				// to PCM_SIGNED before it can be played
-				AudioFormat format = stream.getFormat();
+			// At present, ALAW and ULAW encodings must be converted
+			// to PCM_SIGNED before it can be played
+			AudioFormat format = stream.getFormat();
 
-				if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-					stream = AudioSystem.getAudioInputStream(
-							AudioFormat.Encoding.PCM_SIGNED, stream);
-					format = stream.getFormat();
-				}
-
-				// Create the clip
-				DataLine.Info info = new DataLine.Info(Clip.class,
-						stream.getFormat(),
-						((int) stream.getFrameLength() * format.getFrameSize()));
-				clip = (Clip) AudioSystem.getLine(info);
-
-				// This method does not return until the audio file is completely
-				// loaded
-				clip.open(stream);
-
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+				stream = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, stream);
+				format = stream.getFormat();
 			}
-			return clip;
+
+			// Create the clip
+			DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat(), ((int) stream.getFrameLength() * format.getFrameSize()));
+			clip = (Clip) AudioSystem.getLine(info);
+
+			// This method does not return until the audio file is completely
+			// loaded
+			clip.open(stream);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+		return clip;
+	}
+
 }
+
 class PresPanelDisplay {
 	String pp_itemDisplayed = "";
 	Image pp_theImage;
 	int pp_hVal = 0;
 	int pp_vVal = 0;
 
-	PresPanelDisplay buildPresPanelDisplay(String pp_itemDisplayed, Image pp_theImage, int pp_hVal, int pp_vVal){
+	PresPanelDisplay buildPresPanelDisplay(String pp_itemDisplayed, Image pp_theImage, int pp_hVal, int pp_vVal) {
 
 		this.pp_itemDisplayed = pp_itemDisplayed;
 		this.pp_theImage = pp_theImage;
@@ -416,31 +402,27 @@ class PresPanelDisplay {
 class vlcjPlayer extends JPanel {
 	private EmbeddedMediaPlayer player;
 	private Canvas canvas;
-	
+
 	public vlcjPlayer(int width, int height, int xcoord, int ycoord) {
 		canvas = new Canvas();
 		repaint();
-		
+
 		canvas.setSize(width, height);
 		canvas.setLocation(xcoord, ycoord);
-		
+
 		NativeLibrary.addSearchPath("libvlc", "<libvlc-path>");
-		
+
 		MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
 		player = mediaPlayerFactory.newEmbeddedMediaPlayer();
-		
+
 		CanvasVideoSurface videoSurface = mediaPlayerFactory.newVideoSurface(canvas);
-	
+
 		player.setVideoSurface(videoSurface);
 		canvas.setVisible(true);
 	}
-	public void play(String mrl){
+
+	public void play(String mrl) {
 		this.setVisible(true);
 		player.playMedia(mrl);
 	}
 }
-
-
-
-
-

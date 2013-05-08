@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 public class Experiment implements Iterable<Block>{
 
 	public Boolean randomizeBlockOrder;
@@ -24,7 +27,7 @@ public class Experiment implements Iterable<Block>{
 	public List<String> usableKeys;
 	public List<String> trialTypes;
 	
-	
+	//@JsonManagedReference
 	public List<Block> blocks = new ArrayList<Block>(1);
 	
 	@Override
