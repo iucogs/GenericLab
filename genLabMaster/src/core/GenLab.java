@@ -29,6 +29,7 @@ import experiment.Experiment;
 import experiment.Trial;
 import experiment.Display.DisplayType;
 import experiment.Display.PositionType;
+import gui.ExperimentBuilderPanel;
 import gui.ScriptSetupPanel;
 import gui.IntroPanel;
 import gui.LoadPanel;
@@ -345,7 +346,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	 * Panes. Load the script and setup when moving to the run pane.
 	 */
 	private void setupTabbedPane() {
-		tabbedPane.addTab("Welcome", introP);
+		tabbedPane.addTab("Welcome", new ExperimentBuilderPanel());
 		tabbedPane.addTab("Script Creation Help", instruct1Panel);
 		tabbedPane.addTab("Create Script", null, trialVarsP,
 				"Set trial details and create a script file");
