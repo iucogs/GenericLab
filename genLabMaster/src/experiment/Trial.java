@@ -14,16 +14,18 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class Trial implements Iterable<Display> {
 
-	public String correctKey;
-	public String trialType;
+	public String correctKey = "";
+	public String trialType = "";
 	//@JsonManagedReference
-	public List<Display> displays;
+	public List<Display> displays = new LinkedList<Display>();
 	//@JsonBackReference
 	//public Block parent;
 	
 	//Configuration Vars
-	public Boolean randomizeDisplayOrder;
+	public Boolean randomizeDisplayOrder = false;
 
+	//Metadata
+	public String name = "Untitled Trial";
 	/**
 	 * Default constructor to help make Jackson (JSON library for save/load) happy.
 	 */
@@ -58,4 +60,9 @@ public class Trial implements Iterable<Display> {
 		return displaysCopy.iterator();
 	}
 
+	@Override
+	public String toString()
+	{
+		return "" + this.trialType.toString().toUpperCase() + ", key:" + this.correctKey;
+	}
 }

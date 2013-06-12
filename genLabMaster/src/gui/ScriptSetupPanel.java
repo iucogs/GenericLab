@@ -32,7 +32,7 @@ public class ScriptSetupPanel extends JPanel {
 
 	JComboBox fjcb, fsjcb, remoteFilesCB;
 
-	String scriptname = "";
+	String scriptFilename = "", scriptName = "";
 
 	Color gold = new Color(225, 221, 95);
 	Font f12b = new Font("Arial", Font.BOLD, 12);
@@ -84,7 +84,7 @@ public class ScriptSetupPanel extends JPanel {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent ae) {
 				//Todo: Get this to work in browser applet
-				scriptname = "";
+				scriptFilename = "";
 				AccessController.doPrivileged(
 				        new PrivilegedAction() {
 				            public Object run()  {
@@ -95,9 +95,10 @@ public class ScriptSetupPanel extends JPanel {
 								int userchoice = jfc.showOpenDialog(parent);
 								if (userchoice == JFileChooser.APPROVE_OPTION){
 									scriptDirectory = jfc.getCurrentDirectory();
-									scriptname = jfc.getSelectedFile().getAbsolutePath();
-									fileJTF.setText(scriptname);
-									return scriptname;
+									scriptFilename = jfc.getSelectedFile().getAbsolutePath();
+									scriptName = jfc.getSelectedFile().getName();
+									fileJTF.setText(scriptFilename);
+									return scriptFilename;
 								}
 								return "";  
 				            }
@@ -475,21 +476,8 @@ public class ScriptSetupPanel extends JPanel {
 		saveJL.setFont(f12b);
 		saveToJsonJB = new JButton("Save To JSON");
 		saveToJsonJB.addActionListener(new ActionListener(){
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String filename = "";
-				JFileChooser jfc = new JFileChooser(".");
-				//File dir1 = new File(System.getProperty("user.dir"));
-				//jfc.setCurrentDirectory(dir1);
-				int userchoice = jfc.showSaveDialog(GenLab.getInstance());
-				if (userchoice == JFileChooser.APPROVE_OPTION){
-					filename = jfc.getSelectedFile().getAbsolutePath();
-					ExperimentUtilities.experimentToJson(GenLab.getInstance().experiment, filename);
-				}
-				else
-				{
-					System.err.println("JFileChooser for JSON save failed.");
-				}
+				GenLab.getInstance().saveExperimentToJson();
 			}
 		});
 		Box sbox = Box.createHorizontalBox();
@@ -500,10 +488,14 @@ public class ScriptSetupPanel extends JPanel {
 		//TODO: hook up listener to saveToJsonJB
 	}
 	
-	public String getScript(){
-		return scriptname;	
+	public String getScriptFilename(){
+		return scriptFilename;	
 	}
 
+	public String getScriptName() {
+		return scriptName;
+	}
+	
 	public String getScriptDirectory(){
 		return scriptDirectory.getAbsolutePath() + File.separator;	
 	}
@@ -562,6 +554,8 @@ public class ScriptSetupPanel extends JPanel {
 		String d = delayJTF.getText();
 		return d;
 	}
+
+
 
 }
 

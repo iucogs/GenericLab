@@ -1,0 +1,46 @@
+{
+  "randomizeBlockOrder" : false,
+  "windowPosition" : null,
+  "windowSize" : null,
+  "giveFeedback" : false,
+  "includeAllNumbers" : false,
+  "includeAllLetters" : false,
+  "promptString" : "",
+  "name" : "Untitled Experiment",
+  "scriptFilename" : "",
+  "instructionsFilename" : "",
+  "instructions" : "",
+  "directory" : "",
+  "usableKeys" : [ "" ],
+  "trialTypes" : [ "" ],
+  "blocks" : [ {
+    "trials" : [ {
+      "correctKey" : "",
+      "trialType" : "",
+      "displays" : [ {
+        "@id" : 1,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "Untitled Trial"
+    } ],
+    "reps" : 1,
+    "randomizeTrialOrder" : false,
+    "leaveDisplaysOn" : false,
+    "font" : {
+      "name" : "Tahoma",
+      "style" : 0,
+      "size" : 11
+    },
+    "delayBetweenTrials" : 0,
+    "name" : "experiment.Block@2929e5e9"
+  } ]
+}

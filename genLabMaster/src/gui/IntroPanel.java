@@ -3,11 +3,13 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 import core.GenLab;
 import net.miginfocom.swing.MigLayout;
@@ -60,9 +62,9 @@ public class IntroPanel extends JPanel {
 		this.setLayout(lay);
 		
 		///Setup layout
-		this.add(backToIntroJB,	"cell 1 0,spany 2,w :180, h 75!,align right");
-		this.add(createScriptJB,"cell 0 0,w :200:, h 75!");
-		this.add(createFancyJB,	"cell 0 1,w :200:, h 75!");
+		this.add(backToIntroJB,"cell 1 0,spany 2,w :180, h 75!,align right");
+		this.add(createFancyJB,"cell 0 0,w :200:, h 75!");
+		this.add(createScriptJB,"cell 0 1,w :200:, h 75!");
 		
 	//	this.add(backToIntroJB,"dock south, h 40!,align center");
 
@@ -99,12 +101,18 @@ public class IntroPanel extends JPanel {
 	private void setupButtons() {
 		//'''Top Level Buttons
 		createExperimentJB = new JButton("Create a new\n Experiment");
+		createExperimentJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/edit_20.png")));
+		createExperimentJB.setVerticalTextPosition(SwingConstants.BOTTOM);
+		createExperimentJB.setHorizontalTextPosition(SwingConstants.CENTER);
 		createExperimentJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				doCreateMenu();
 			}
 		});
 		loadExperimentJB = new JButton("Load an Existing\n Experiment");
+		loadExperimentJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/find_20.png")));
+		loadExperimentJB.setVerticalTextPosition(SwingConstants.BOTTOM);
+		loadExperimentJB.setHorizontalTextPosition(SwingConstants.CENTER);
 		loadExperimentJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				doVertLoadMenu();
@@ -114,30 +122,27 @@ public class IntroPanel extends JPanel {
 		createScriptJB = new JButton("Use old script creator");
 		createScriptJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				switchToTab(2);
+				switchToTab(3);
 			}
 		});
 		createFancyJB = new JButton("Use new script creator");
 		createFancyJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(GenLab.getInstance(),
-											  "Not yet implemented.",
-											  "", 
-											  JOptionPane.ERROR_MESSAGE);
+				switchToTab(1);
 			}
 		});
 		//'''Load Buttons
 		loadScriptJB = new JButton("Load from Script file");
 		loadScriptJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				switchToTab(4);
+				switchToTab(5);
 			}
 		});
 		loadJsonJB = new JButton("Load from JSON file");
 		loadJsonJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				GenLab.getInstance().setupExperimentFromJson();
-				switchToTab(5);
+				switchToTab(6);
 			}
 		});
 		loadServerJB = new JButton("Load from the server");

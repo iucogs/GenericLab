@@ -58,12 +58,13 @@ public class Display {
 	//@JsonBackReference
 	//public Trial parent;
 	
-	private DisplayType displayType;
-	private PositionType positionType;
+	//TODO: Either make these public, or switch to get/set for other types
+	private DisplayType displayType = DisplayType.TEXT;
+	private PositionType positionType = PositionType.CENTER;
 	private String textOrPath; // Is built from experiment.directory + (filename of this resource)
 	public Point position = new Point(30,30);
 	public Dimension randomOffset = new Dimension(0,0);
-	private double durationSecs; // in seconds
+	private double durationSecs = 1.000; // in seconds
 	private double persistTime = 0.000; // in seconds
 
 	/**
@@ -118,11 +119,6 @@ public class Display {
 	public double getPersistTime() {
 		return persistTime;
 	}
-
-
-	public void setPositionType(PositionType pt) {
-		this.positionType = pt;
-	}
 	public void setPositionType(PositionType positionType, int xPos, int yPos) {
 		this.position = new Point(xPos, yPos);
 		this.positionType = positionType;
@@ -135,20 +131,30 @@ public class Display {
 	public PositionType getPositionType() {
 		return positionType;
 	}
+	public void setPositionType(PositionType pt){
+		positionType = pt;
+	}
+	
 	public DisplayType getDisplayType() {
 		return displayType;
 	}
 	
+	public void setDisplayType(DisplayType dt) {
+		displayType = dt;
+	}
 	
 	public String getTextOrPath() {
 		return textOrPath;
 	}
 
-	
-	
-	
-	
-	
-	
+	@Override
+	public String toString()
+	{
+		return "" + this.displayType + ":" + this.textOrPath;
+	}
+
+	public void setTextOrPath(String val) {
+		textOrPath = val;
+	}
 	
 }

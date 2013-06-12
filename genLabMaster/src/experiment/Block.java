@@ -20,12 +20,15 @@ public class Block implements Iterable<Trial>{
 	//public Experiment parent;
 	
 	//Configuration
-	public Integer reps = null;
-	public boolean randomizeTrialOrder;
-	public boolean leaveDisplaysOn;
+	public Integer reps = 1;  //TODO: Broken or Not Yet Implemented!
+	public boolean randomizeTrialOrder = false;
+	public boolean leaveDisplaysOn = false;
 	public Font font = null;
-	public int delayBetweenTrials;
+	public int delayBetweenTrials = 0;
 
+	//Metadata
+	public String name = super.toString();
+	
 	/**
 	 * Empty default constructor for Jackson's use.
 	 */
@@ -47,5 +50,11 @@ public class Block implements Iterable<Trial>{
 		}
 
 		return trialsCopy.iterator();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return this.name;
 	}
 }

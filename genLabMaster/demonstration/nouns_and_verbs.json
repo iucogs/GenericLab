@@ -1,0 +1,97 @@
+{
+  "randomizeBlockOrder" : false,
+  "windowPosition" : null,
+  "windowSize" : null,
+  "giveFeedback" : true,
+  "includeAllNumbers" : false,
+  "includeAllLetters" : false,
+  "promptString" : "Press 'n' for nouns and 'v' for verbs",
+  "name" : "Nouns And Verbs",
+  "scriptFilename" : "",
+  "instructionsFilename" : "",
+  "instructions" : "",
+  "directory" : "",
+  "usableKeys" : [ "n", "v" ],
+  "trialTypes" : [ "noun", "verb" ],
+  "blocks" : [ {
+    "trials" : [ {
+      "correctKey" : "v",
+      "trialType" : "",
+      "displays" : [ {
+        "@id" : 1,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "dance",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "Untitled Trial"
+    }, {
+      "correctKey" : "n",
+      "trialType" : "noun",
+      "displays" : [ {
+        "@id" : 2,
+        "displayType" : "IMAGE",
+        "positionType" : "CENTER",
+        "textOrPath" : "turtle.jpg",
+        "position" : {
+          "x" : 0.0,
+          "y" : 0.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "Untitled Trial"
+    }, {
+      "correctKey" : "",
+      "trialType" : "noun",
+      "displays" : [ {
+        "@id" : 3,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "island",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "Untitled Trial"
+    }, {
+      "correctKey" : "v",
+      "trialType" : "verb",
+      "displays" : [ {
+        "@id" : 4,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "run",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "Untitled Trial"
+    } ],
+    "reps" : 1,
+    "randomizeTrialOrder" : false,
+    "leaveDisplaysOn" : false,
+    "font" : {
+      "name" : "Tahoma",
+      "style" : 0,
+      "size" : 11
+    },
+    "delayBetweenTrials" : 0,
+    "name" : "experiment.Block@38ad5fab"
+  } ]
+}

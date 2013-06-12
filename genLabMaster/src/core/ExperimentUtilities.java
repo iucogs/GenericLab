@@ -143,7 +143,7 @@ public class ExperimentUtilities {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		
+		ex.directory = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator;
 		return ex;
 	}
 	
@@ -156,10 +156,11 @@ public class ExperimentUtilities {
 		mapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
 		mapper.addMixInAnnotations(Point.class, PointMixIn.class);
 		mapper.addMixInAnnotations(Font.class, FontMixIn.class);
-
 		try
 		{
 			mapper.writeValue(new File(filename),ex);
+			//if the mapper throws an exception, dir will not be updated
+			ex.directory = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator;
 		} 
 		catch (Exception e)
 		{
@@ -185,15 +186,21 @@ public class ExperimentUtilities {
 		return ex;
 	}
 	
+	/**
+	 * Helper method for loading from script (loadScriptExperiment).
+	 * @param ex
+	 * @return
+	 */
 	private static boolean initializeScriptExperiment(Experiment ex)
 	{
 		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;
 		Block block = ex.blocks.get(0);
-		ex.scriptFilename = exptVarsP.getScript();
+		ex.scriptFilename = exptVarsP.getScriptFilename();
 		if (ex.scriptFilename.equals("")) {
-			varError(exptVarsP,0, "");  //TODO varError: keep this setup?
+			varError(exptVarsP,0, "");  //TODO keep varError setup?
 			return false;
 		}
+		ex.name = exptVarsP.getScriptName();
 		ex.directory = exptVarsP.getScriptDirectory();
 		// get repetitions
 		int reps;
@@ -234,6 +241,11 @@ public class ExperimentUtilities {
 		}
 		return true;
 	}
+	/**
+	 * Helper method for loading from script (loadScriptExperiment).
+	 * @param ex
+	 * @return
+	 */
 	private static boolean parseScript(Experiment ex){
 		String scriptString, trialString;
 		int numTrials = 0;
@@ -463,6 +475,11 @@ public class ExperimentUtilities {
 		
 		return true;
 	}
+	/**
+	 * Helper method for loading from script (loadScriptExperiment).
+	 * @param ex
+	 * @return
+	 */
 	private static boolean loadSettingsFromExptPanel(Experiment ex)
 	{
 		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;

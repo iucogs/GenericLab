@@ -57,6 +57,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	public ResultsPanel resultsP;
 	public IntroPanel introP;
 	public LoadPanel loadP;
+	public ExperimentBuilderPanel builderP;
 	String instructionsScreen1Path, instructionsScreen2Path;
 
 	//'''Control Variables For Running Experiment
@@ -123,6 +124,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		resultsP = new ResultsPanel();
 		introP = new IntroPanel();
 		loadP = new LoadPanel();
+		builderP = new ExperimentBuilderPanel();
 		
 		/// Setup Tabs
 		tabbedPane = new JTabbedPane();
@@ -176,6 +178,9 @@ public class GenLab extends JApplet implements ComponentListener {
 				boolean leaveDisplayOn = currBlock.leaveDisplaysOn;
 				System.out.println("Dir:" + experiment.directory + " path:" + currentDisplay.getTextOrPath());
 
+				System.out.println("Drwing display " + currentDisplay + " with type " + currentDisplay.getDisplayType());
+
+				
 				switch(currentDisplay.getDisplayType())
 				{
 				case TEXT:
@@ -346,7 +351,8 @@ public class GenLab extends JApplet implements ComponentListener {
 	 * Panes. Load the script and setup when moving to the run pane.
 	 */
 	private void setupTabbedPane() {
-		tabbedPane.addTab("Welcome", new ExperimentBuilderPanel());
+		tabbedPane.addTab("Welcome", introP);
+		tabbedPane.addTab("Experiment Builder", builderP);
 		tabbedPane.addTab("Script Creation Help", instruct1Panel);
 		tabbedPane.addTab("Create Script", null, trialVarsP,
 				"Set trial details and create a script file");
@@ -362,7 +368,8 @@ public class GenLab extends JApplet implements ComponentListener {
 			public void stateChanged(ChangeEvent changeEvent) {
 				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
 				Component c = tabbedPane.getSelectedComponent();
-				
+				System.out.println("Detected! class is " + c.getClass());
+
 				if (c instanceof IntroPanel)
 				{
 					introP.doIntroMenu();
@@ -370,10 +377,17 @@ public class GenLab extends JApplet implements ComponentListener {
 				else if (c instanceof RunPanel)
 				{
 					//TODO: Find a better way to load the experiment from script (aka on page)
-					if (experiment == null) //Hasn't been setup by JSON.
+					if (experiment == null)//Hasn't been setup by JSON.
+					{
 						setupExperimentFromOldScript();
+					}
 					int runIndex = tabbedPane.indexOfComponent(runP);
 					tabbedPane.setEnabledAt(runIndex,true);
+				}
+				else if (c instanceof ExperimentBuilderPanel)
+				{
+					ExperimentBuilderPanel builderP = (ExperimentBuilderPanel)c;
+					builderP.doBuildLayout();
 				}
 			}
 		};
@@ -430,6 +444,25 @@ public class GenLab extends JApplet implements ComponentListener {
 		{
 			runP.startJB.setEnabled(false);
 			runP.startJB.setToolTipText("Error parsing script.  Check script and setup page.");
+			return false;
+		}
+	}
+	
+	public boolean saveExperimentToJson()
+	{
+		String filename = "";
+		JFileChooser jfc = new JFileChooser(".");
+		//File dir1 = new File(System.getProperty("user.dir"));
+		//jfc.setCurrentDirectory(dir1);
+		int userchoice = jfc.showSaveDialog(GenLab.getInstance());
+		if (userchoice == JFileChooser.APPROVE_OPTION){
+			filename = jfc.getSelectedFile().getAbsolutePath();
+			ExperimentUtilities.experimentToJson(GenLab.getInstance().experiment, filename);
+			return true;
+		}
+		else
+		{
+			System.err.println("JFileChooser for JSON save failed.");
 			return false;
 		}
 	}

@@ -13,17 +13,22 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class Experiment implements Iterable<Block>{
 
-	public Boolean randomizeBlockOrder;
-	public Point windowPosition;
-	public Dimension windowSize;
-	public Boolean giveFeedback,includeAllNumbers,includeAllLetters;
-	public String promptString;
+	//TODO: Are we sure we want to have default values here?
+	//If we don't we'll have to null check in places like ExperimentBuilder.
+	public Boolean randomizeBlockOrder = false;
+	public Point windowPosition; // TODO Use this?
+	public Dimension windowSize; // TODO Use this?
+	public Boolean giveFeedback = false,
+					includeAllNumbers = false,
+					includeAllLetters = false;
+	public String promptString = "";
 	
 	//Meta Settings
-	public String scriptFilename;  //This path is absolute, from JFC
-	public String instructionsFilename;
-	public String instructions;
-	public String directory;  //This is the current directory of the JFC when the file was chosen.   Includes a trailing separator.
+	public String name = "Untitled Experiment";
+	public String scriptFilename = "";  //Name of the file
+	public String instructionsFilename = "";
+	public String instructions = "";
+	public String directory = "";  //This is the current directory of the JFC when the file was chosen.   Includes a trailing separator.
 	public List<String> usableKeys;
 	public List<String> trialTypes;
 	
@@ -41,6 +46,11 @@ public class Experiment implements Iterable<Block>{
 		return blocksCopy.iterator();
 	}
 	
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 	
 
 }
