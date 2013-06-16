@@ -1,0 +1,97 @@
+{
+  "randomizeBlockOrder" : false,
+  "windowPosition" : null,
+  "windowSize" : null,
+  "giveFeedback" : false,
+  "includeAllNumbers" : false,
+  "includeAllLetters" : false,
+  "promptString" : "Is this a fruit or a vegetable?",
+  "name" : "my simple priming expermining",
+  "scriptFilename" : "",
+  "instructionsFilename" : "",
+  "instructions" : "",
+  "directory" : "",
+  "usableKeys" : [ "f", "v" ],
+  "trialTypes" : [ "fruit", "veggie" ],
+  "blocks" : [ {
+    "trials" : [ {
+      "correctKey" : "v",
+      "trialType" : "veggie",
+      "displays" : [ {
+        "@id" : 1,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "carrot",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "veggie 2"
+    }, {
+      "correctKey" : "v",
+      "trialType" : "veggie",
+      "displays" : [ {
+        "@id" : 2,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "pumpkin",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "veggie 3"
+    }, {
+      "correctKey" : "f",
+      "trialType" : "fruit",
+      "displays" : [ {
+        "@id" : 3,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "apple",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "suprise fruit"
+    }, {
+      "correctKey" : "v",
+      "trialType" : "veggie",
+      "displays" : [ {
+        "@id" : 4,
+        "displayType" : "TEXT",
+        "positionType" : "CENTER",
+        "textOrPath" : "turnip",
+        "position" : {
+          "x" : 30.0,
+          "y" : 30.0
+        },
+        "durationSecs" : 1.0,
+        "persistTime" : 0.0
+      } ],
+      "randomizeDisplayOrder" : false,
+      "name" : "veggie 1"
+    } ],
+    "reps" : 1,
+    "randomizeTrialOrder" : false,
+    "leaveDisplaysOn" : false,
+    "font" : {
+      "name" : "Tahoma",
+      "style" : 0,
+      "size" : 11
+    },
+    "delayBetweenTrials" : 0,
+    "name" : "my only block"
+  } ]
+}

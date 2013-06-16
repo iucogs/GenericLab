@@ -38,7 +38,7 @@ public class IntroPanel extends JPanel {
 		this.repaint();
 	}
 	
-	private void doVertLoadMenu() {
+	private void doLoadMenu() {
 		this.removeAll();
 		MigLayout lay = new MigLayout("align center","push[][]push","push[][][]push");
 		this.setLayout(lay);
@@ -71,24 +71,6 @@ public class IntroPanel extends JPanel {
 		this.repaint();
 	}
 	
-	private void doHorzLoadMenu()
-	{
-		this.removeAll();
-		MigLayout lay = new MigLayout("align center","push[][][]push","push[]20[][]push");
-		this.setLayout(lay);
-		
-		///Setup layout
-		this.add(new JLabel("Choose an option..."),"cell 1 0, wrap,align center");
-		this.add(loadScriptJB,"cell 0 1,w :200:, h 75!");
-		this.add(loadJsonJB,"cell 1 1,w :200:, h 75!");
-		this.add(loadServerJB,"cell 2 1,w :200:, h 75!,wrap");
-		this.add(backToIntroJB,"cell 0 2, span 3, h 40!,align center");
-
-		this.repaint();
-	}
-	
-
-	
 	/**
 	 * Switches to a given tab.
 	 * TODO: Rewrite this using the Panels instead of indexes to avoid errors.
@@ -115,7 +97,7 @@ public class IntroPanel extends JPanel {
 		loadExperimentJB.setHorizontalTextPosition(SwingConstants.CENTER);
 		loadExperimentJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				doVertLoadMenu();
+				doLoadMenu();
 			}
 		});
 		//'''Create Buttons

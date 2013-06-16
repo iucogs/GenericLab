@@ -143,7 +143,7 @@ public class ExperimentUtilities {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		ex.directory = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator;
+		//ex.directory = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator;
 		return ex;
 	}
 	

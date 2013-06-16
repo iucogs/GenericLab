@@ -38,6 +38,8 @@ public class ExperimentBuilderPanel extends JPanel{
 
 	private boolean hasBeenSaved = false;
 
+	public Experiment builderExperiment = null;
+	
 	private ToolsBox toolsBox = new ToolsBox(hasBeenSaved);
 	private ViewBox viewBox = new ViewBox();
 	private DetailsBox detailsBox = new DetailsBox();
@@ -49,7 +51,7 @@ public class ExperimentBuilderPanel extends JPanel{
 	
 	public void doBuildLayout() {
 		if (GenLab.getInstance().experiment == null)
-			GenLab.getInstance().experiment = new Experiment();
+			builderExperiment = new Experiment();
 		Experiment ex = GenLab.getInstance().experiment;
 		hasBeenSaved = false;
 		this.removeAll();

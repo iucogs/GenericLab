@@ -17,7 +17,7 @@ public class ToolsBox extends JPanel
 {
 	
 	private JButton newBlockJB,newTrialJB,newDisplayJB;
-	private JButton openJB,saveAsJB,saveJB,quickRunJB;
+	private JButton openJB,saveAsJB,saveJB,quickRunJB,launchJB;
 	private JButton deleteJB,copyJB,pasteJB;
 	
 	public ToolsBox(boolean hasBeenSaved)
@@ -35,12 +35,14 @@ public class ToolsBox extends JPanel
 		newTrialJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/new_trial_32.png")));
 		newDisplayJB = new JButton("+Display");
 		newDisplayJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/new_display_32.png")));
-		openJB = new JButton("Open Existing Experiment");
+		openJB = new JButton("Open");
 		openJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/find_20.png")));		
-		saveAsJB = new JButton("Save As...");
+		saveAsJB = new JButton("Save...");
 		saveAsJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/save_as_20.png")));		
 		saveJB = new JButton("Save");
-		saveJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/edit_20.png")));		
+		saveJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/edit_20.png")));	
+		launchJB = new JButton("Use Experiment");
+		launchJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/up_20.png")));		
 		quickRunJB = new JButton("Quick Run");
 		quickRunJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/forward_arrow_20.png")));		
 		deleteJB = new JButton("Delete");
@@ -50,7 +52,7 @@ public class ToolsBox extends JPanel
 		pasteJB = new JButton("Paste");
 		pasteJB.setEnabled(false);//TODO: implement CnP- use single object serialization via Jackson in ExperimentUtilities.
 		JButton[] buttons = new JButton[]{newBlockJB,newTrialJB,newDisplayJB,
-				openJB,saveAsJB,
+				openJB,saveJB,saveAsJB,launchJB,quickRunJB,
 				deleteJB,copyJB,pasteJB};
 		for (JButton b : buttons)
 		{
@@ -106,7 +108,7 @@ public class ToolsBox extends JPanel
 				if (success)
 				{
 					GenLab.getInstance().builderP.setHasBeenSaved(true);
-					saveJB.setVisible(true);
+					//saveJB.setVisible(true);
 				}
 			}
 		});			
@@ -127,6 +129,13 @@ public class ToolsBox extends JPanel
 				GenLab.getInstance().tabbedPane.setSelectedIndex(6);
 			}
 		});	
+		launchJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+						  "Not yet implemented.",
+						  "", JOptionPane.ERROR_MESSAGE);
+			}
+		});	
 	}
 
 	public void doDefaultLayout(boolean hasBeenSaved)
@@ -137,13 +146,14 @@ public class ToolsBox extends JPanel
 		this.add(newBlockJB,",split 3");
 		this.add(newTrialJB,"");
 		this.add(newDisplayJB,"");
+		this.add(saveJB,"align right, split 3");
+		this.add(saveAsJB,"align right");
 		this.add(openJB,"align right,wrap");
 		this.add(deleteJB,"split 3");
 		this.add(copyJB,"");
 		this.add(pasteJB,"");
-		this.add(saveJB,"align right, split 3");
-		this.add(saveAsJB,"align right");
-		this.add(quickRunJB,"align right");
-		saveJB.setVisible(hasBeenSaved);
+		this.add(quickRunJB,"align right,split 2");
+		this.add(launchJB,"align right");
+		//saveJB.setVisible(hasBeenSaved);
 	}
 }
