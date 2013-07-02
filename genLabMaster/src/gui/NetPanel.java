@@ -31,13 +31,13 @@ import core.GenLab;
 
 import net.miginfocom.swing.MigLayout;
 
-public class LoadPanel extends JPanel {
+public class NetPanel extends JPanel {
 
 	JTable table;
 	JScrollPane jsp;
 	GenLab genLab = GenLab.getInstance();
 	
-	public LoadPanel(){
+	public NetPanel(){
 		
 		//Table Setup
 		this.setBackground(new Color(200,200,200));

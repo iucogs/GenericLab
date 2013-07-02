@@ -5,36 +5,50 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import core.GenLab;
+import experiment.Experiment;
 import net.miginfocom.swing.MigLayout;
 
 
-public class IntroPanel extends JPanel {
+public class HomePanel extends JPanel {
 
 	private JButton createExperimentJB, loadExperimentJB,
 					loadScriptJB, loadJsonJB, loadServerJB,
 					createScriptJB, createFancyJB,
 					backToIntroJB;
 	
-	public IntroPanel(){
-		setupButtons();
+	public HomePanel(){
 		this.setBackground(new Color(200,200,200));
-		doIntroMenu();
+		setupIntroButtons();
+		doHomePanel();
 	}
 
-	public void doIntroMenu() {
+	public void doHomePanel()
+	{
+		//GenLab.getInstance().experiment = new Experiment();
+		if (GenLab.getInstance().experiment != null)
+			doExperimentView();
+		else
+			doIntroMenu();
+	}
+	
+	private void doIntroMenu() {
 		this.removeAll();
 		MigLayout layout = new MigLayout("align center","push[][]push","push[][][]push");
 		this.setLayout(layout);	
 		this.add(new JLabel("Choose an option..."),"cell 0 0,span 2,align center");
 		this.add(createExperimentJB,"cell 0 1,w 200!, h 100!,align right");
 		this.add(loadExperimentJB,"cell 1 1,w 200!, h 100!,align left,push");
+		this.validate();
 		this.repaint();
 	}
 	
@@ -51,7 +65,7 @@ public class IntroPanel extends JPanel {
 		this.add(loadServerJB,	"cell 1 2,w :200:, h 75!");
 		
 	//	this.add(backToIntroJB,"dock south, h 40!,align center");
-
+		this.validate();
 		this.repaint();
 	}
 	
@@ -68,19 +82,11 @@ public class IntroPanel extends JPanel {
 		
 	//	this.add(backToIntroJB,"dock south, h 40!,align center");
 
+		this.validate();
 		this.repaint();
 	}
-	
-	/**
-	 * Switches to a given tab.
-	 * TODO: Rewrite this using the Panels instead of indexes to avoid errors.
-	 * @param i
-	 */
-	private void switchToTab(int i) {
-		GenLab.getInstance().tabbedPane.setSelectedIndex(i);
-	}
-	
-	private void setupButtons() {
+		
+	private void setupIntroButtons() {
 		//'''Top Level Buttons
 		createExperimentJB = new JButton("Create a new\n Experiment");
 		createExperimentJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/edit_20.png")));
@@ -104,27 +110,28 @@ public class IntroPanel extends JPanel {
 		createScriptJB = new JButton("Use old script creator");
 		createScriptJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				switchToTab(3);
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().scriptCreatorP);
 			}
 		});
 		createFancyJB = new JButton("Use new script creator");
 		createFancyJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				switchToTab(1);
+				GenLab.getInstance().builderP.doBuildLayout();
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().builderP);
 			}
 		});
 		//'''Load Buttons
 		loadScriptJB = new JButton("Load from Script file");
 		loadScriptJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				switchToTab(5);
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().scriptSetupP);
 			}
 		});
 		loadJsonJB = new JButton("Load from JSON file");
 		loadJsonJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				GenLab.getInstance().setupExperimentFromJson();
-				switchToTab(6);
+				GenLab.getInstance().homeP.doHomePanel();
 			}
 		});
 		loadServerJB = new JButton("Load from the server");
@@ -145,4 +152,37 @@ public class IntroPanel extends JPanel {
 		});
 	}
 
+	public void doExperimentView()
+	{
+		this.removeAll();
+		MigLayout layout = new MigLayout("align center","push[align center]push","push[][][][]push");
+		this.setLayout(layout);	
+		this.add(new JLabel("Click to Run"),"cell 0 0");
+		JButton mainButton = new JButton("");
+		mainButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+			{
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().runP);
+			}
+		});
+		mainButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+		mainButton.setHorizontalTextPosition(SwingConstants.CENTER);
+		JTextArea experimentTA = new JTextArea();
+		experimentTA.setText("ex:"+GenLab.getInstance().experiment.name +
+				"\n Second Line:");
+		experimentTA.setEditable(false);
+		experimentTA.setBackground(new Color(120,220,120));
+		mainButton.setBackground(new Color(80,255,80));
+		mainButton.setLayout(new MigLayout("","push[]push","push[]push"));
+		mainButton.add(experimentTA,"align center,w 200!,h 50!");
+		this.add(mainButton,
+				"cell 0 1, w 400!, h 100!");
+		this.add(new JLabel("Option text goes here."),"cell 0 2");
+		this.add(new JLabel("Options go here."),"cell 0 3");
+
+		//this.add(createExperimentJB,"cell 0 1,w 200!, h 100!,align right");
+		this.validate();
+		this.repaint();
+	}
+	
 }

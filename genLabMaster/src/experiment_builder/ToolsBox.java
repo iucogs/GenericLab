@@ -126,7 +126,7 @@ public class ToolsBox extends JPanel
 				if (!success) return;
 				success = GenLab.getInstance().setupExperimentFromJson();
 				if (!success) return;
-				GenLab.getInstance().tabbedPane.setSelectedIndex(6);
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().runP);
 			}
 		});	
 		launchJB.addActionListener(new ActionListener(){

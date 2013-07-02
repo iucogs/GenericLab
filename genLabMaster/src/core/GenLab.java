@@ -30,9 +30,10 @@ import experiment.Trial;
 import experiment.Display.DisplayType;
 import experiment.Display.PositionType;
 import gui.ExperimentBuilderPanel;
+import gui.HolderPanel;
 import gui.ScriptSetupPanel;
-import gui.IntroPanel;
-import gui.LoadPanel;
+import gui.HomePanel;
+import gui.NetPanel;
 import gui.PresentationPanel;
 import gui.ResultsPanel;
 import gui.RunPanel;
@@ -40,6 +41,13 @@ import gui.ScriptCreatorPanel;
 
 //import javax.media.bean.playerbean.MediaPlayer;
 
+//TODO: Remove unused imports in all classes
+//TODO: Delete undeeded resources
+
+/**
+ * Program entry point and logical director of running experiments.
+ * Initializes 
+ */
 public class GenLab extends JApplet implements ComponentListener {
 
 	private static GenLab instance;  //Singleton Instance
@@ -49,15 +57,17 @@ public class GenLab extends JApplet implements ComponentListener {
 	List<Response> userResponses = new ArrayList<Response>();
 
 	//'''GUI Components
-	public JTabbedPane tabbedPane;
+	public JTabbedPane tabbedPaneDeprecated;
 	public JPanel instruct1Panel, instruct2Panel;
-	public ScriptCreatorPanel trialVarsP;
-	public ScriptSetupPanel exptVarsP;
+	public ScriptCreatorPanel scriptCreatorP;
+	public ScriptSetupPanel scriptSetupP;
 	public RunPanel runP;
 	public ResultsPanel resultsP;
-	public IntroPanel introP;
-	public LoadPanel loadP;
+	public HomePanel homeP;
+	public NetPanel loadP;
 	public ExperimentBuilderPanel builderP;
+	public HolderPanel holderP;
+	
 	String instructionsScreen1Path, instructionsScreen2Path;
 
 	//'''Control Variables For Running Experiment
@@ -79,6 +89,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	double tempstart, tempstop, temptime;
 	String imagePath; //directoryString
 	Component videoComponent;
+
 
 	/**
 	 * Accessor method to the GenLab singleton.
@@ -109,6 +120,16 @@ public class GenLab extends JApplet implements ComponentListener {
 	}
 	
 	public void init(){
+		/// Setup LAF
+		try
+		{
+			//TODO: Hunt down and standardize other UI / LaF changes.
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		/// Setup Panels
 		instruct1Panel = new JPanel();
 		instruct1Panel.setBackground(Color.white);
@@ -118,27 +139,26 @@ public class GenLab extends JApplet implements ComponentListener {
 		instruct2Panel.setBackground(Color.white);
 		instructionsScreen2Path = "genlabInstr2.jpg";
 		addInstructions(instruct2Panel, instructionsScreen2Path);
-		trialVarsP = new ScriptCreatorPanel();
-		exptVarsP = new ScriptSetupPanel();
+		scriptCreatorP = new ScriptCreatorPanel();
+		scriptSetupP = new ScriptSetupPanel();
 		runP = new RunPanel();
 		resultsP = new ResultsPanel();
-		introP = new IntroPanel();
-		loadP = new LoadPanel();
+		homeP = new HomePanel();
+		loadP = new NetPanel();
 		builderP = new ExperimentBuilderPanel();
-		
+		holderP = new HolderPanel();
 		/// Setup Tabs
-		tabbedPane = new JTabbedPane();
-		setupTabbedPane();
-		getContentPane().add(tabbedPane);
+//		tabbedPane = new JTabbedPane();
+		//setupTabbedPane();
+		getContentPane().add(holderP);
+		holderP.showPanel(homeP);
+
+		//getContentPane().add(tabbedPane);
 		
-		/// Setup LAF
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+
+		
+		
+
 
 		setupTimerAndKeyActions();
 	}
@@ -346,56 +366,64 @@ public class GenLab extends JApplet implements ComponentListener {
 		}
 	}
 
+//	/**
+//	 * Populate the tabs with panels. Add a listener to detect changes from
+//	 * Panes. Load the script and setup when moving to the run pane.
+//	 */
+//	private void setupTabbedPane() {
+//		tabbedPane.addTab("Welcome", introP);
+//		tabbedPane.addTab("Experiment Builder", builderP);
+//		tabbedPane.addTab("Script Creation Help", instruct1Panel);
+//		tabbedPane.addTab("Create Script", null, scriptCreatorP,
+//				"Set trial details and create a script file");
+//		tabbedPane.addTab("Script Setup Help", instruct2Panel);
+//		tabbedPane.addTab("Set up Experiment", null, scriptSetupP,
+//				"Set experiment variables");
+//		tabbedPane.addTab("Run Experiment", runP);
+//		tabbedPane.addTab("Results", resultsP);
+//		tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),false);
+//
+//
+//		ChangeListener changeListener = new ChangeListener() {
+//			public void stateChanged(ChangeEvent changeEvent) {
+//				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
+//				Component c = tabbedPane.getSelectedComponent();
+//				System.out.println("Detected! class is " + c.getClass());
+//
+//				if (c instanceof IntroPanel)
+//				{
+//					introP.doIntroMenu();
+//				}
+//				else if (c instanceof RunPanel)
+//				{
+//					//TODO: Find a better way to load the experiment from script (aka on page)
+//					if (experiment == null)//Hasn't been setup by JSON.
+//					{
+//						setupExperimentFromOldScript();
+//					}
+//					int runIndex = tabbedPane.indexOfComponent(runP);
+//					tabbedPane.setEnabledAt(runIndex,true);
+//				}
+//				else if (c instanceof ExperimentBuilderPanel)
+//				{
+//					ExperimentBuilderPanel builderP = (ExperimentBuilderPanel)c;
+//					builderP.doBuildLayout();
+//				}
+//			}
+//		};
+//		tabbedPane.addChangeListener(changeListener);
+//	}
+
 	/**
-	 * Populate the tabs with panels. Add a listener to detect changes from
-	 * Panes. Load the script and setup when moving to the run pane.
+	 * Switch the view to a given panel.
+	 * @param scriptCreatorP2
 	 */
-	private void setupTabbedPane() {
-		tabbedPane.addTab("Welcome", introP);
-		tabbedPane.addTab("Experiment Builder", builderP);
-		tabbedPane.addTab("Script Creation Help", instruct1Panel);
-		tabbedPane.addTab("Create Script", null, trialVarsP,
-				"Set trial details and create a script file");
-		tabbedPane.addTab("Script Setup Help", instruct2Panel);
-		tabbedPane.addTab("Set up Experiment", null, exptVarsP,
-				"Set experiment variables");
-		tabbedPane.addTab("Run Experiment", runP);
-		tabbedPane.addTab("Results", resultsP);
-		tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),false);
-
-
-		ChangeListener changeListener = new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane tabbedPane = (JTabbedPane) changeEvent.getSource();
-				Component c = tabbedPane.getSelectedComponent();
-				System.out.println("Detected! class is " + c.getClass());
-
-				if (c instanceof IntroPanel)
-				{
-					introP.doIntroMenu();
-				}
-				else if (c instanceof RunPanel)
-				{
-					//TODO: Find a better way to load the experiment from script (aka on page)
-					if (experiment == null)//Hasn't been setup by JSON.
-					{
-						setupExperimentFromOldScript();
-					}
-					int runIndex = tabbedPane.indexOfComponent(runP);
-					tabbedPane.setEnabledAt(runIndex,true);
-				}
-				else if (c instanceof ExperimentBuilderPanel)
-				{
-					ExperimentBuilderPanel builderP = (ExperimentBuilderPanel)c;
-					builderP.doBuildLayout();
-				}
-			}
-		};
-		tabbedPane.addChangeListener(changeListener);
+	public void switchToPanel(JPanel panel) {
+		holderP.showPanel(panel);
 	}
 
 	public void addInstructions(JPanel ip, String jpg) {
-
+		//TODO: what is this for?  Can we update it?
 		URL urlImage = getClass().getResource(jpg);
 		// System.out.println(urlImage);
 		Image img = Toolkit.getDefaultToolkit().getImage(urlImage);
@@ -624,7 +652,7 @@ public class GenLab extends JApplet implements ComponentListener {
 
 	public void printResults() {
 
-		tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),true);
+		//tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(resultsP),true);
 		
 		char[] arrayOfLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			.toCharArray();
@@ -940,6 +968,9 @@ public class GenLab extends JApplet implements ComponentListener {
 		//Do Nothing
 		System.out.println("Do not run this as a java application; it is an applet.");
 	}
+
+
+
 
 
 }

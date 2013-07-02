@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DisplayDetailsPanel extends JPanel {
+public class ScriptCreatorDetailBox extends JPanel {
 
 	Box ddhbox, ddvbox;
 
@@ -15,7 +15,7 @@ public class DisplayDetailsPanel extends JPanel {
 	Color varsOrange = new Color(245, 183, 87);
 	Font f12b = new Font("Arial", Font.BOLD, 12);
 
-	public DisplayDetailsPanel(int dn){
+	public ScriptCreatorDetailBox(int dn){
 
 		setBackground(varsOrange);
 		JLabel stimJL = new JLabel("Stimulus" + dn + ":", JLabel.RIGHT);

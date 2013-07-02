@@ -193,7 +193,7 @@ public class ExperimentUtilities {
 	 */
 	private static boolean initializeScriptExperiment(Experiment ex)
 	{
-		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;
+		ScriptSetupPanel exptVarsP = GenLab.getInstance().scriptSetupP;
 		Block block = ex.blocks.get(0);
 		ex.scriptFilename = exptVarsP.getScriptFilename();
 		if (ex.scriptFilename.equals("")) {
@@ -482,7 +482,7 @@ public class ExperimentUtilities {
 	 */
 	private static boolean loadSettingsFromExptPanel(Experiment ex)
 	{
-		ScriptSetupPanel exptVarsP = GenLab.getInstance().exptVarsP;
+		ScriptSetupPanel exptVarsP = GenLab.getInstance().scriptSetupP;
 
 		// Replicate each trial based on reps number
 		int reps = ex.blocks.get(0).reps;

@@ -20,8 +20,8 @@ public class TrialVarsPanel extends JPanel {
 	JTextField keyJTF, typeJTF;
 	String key, type;
 
-	DisplayDetailsPanel ddp1, ddp2, ddp3, ddp4, ddp5;
-	DisplayDetailsPanel ddp6, ddp7, ddp8, ddp9, ddp10;
+	ScriptCreatorDetailBox ddp1, ddp2, ddp3, ddp4, ddp5;
+	ScriptCreatorDetailBox ddp6, ddp7, ddp8, ddp9, ddp10;
 
 	JButton addJB, createJB, resetJB;
 
@@ -42,17 +42,17 @@ public class TrialVarsPanel extends JPanel {
 
 		hbox1 = numtrialsBox();
 		hbox2 = typeBox();
-		ddp1 = new DisplayDetailsPanel(1);
+		ddp1 = new ScriptCreatorDetailBox(1);
 		setupToolTips();
-		ddp2 = new DisplayDetailsPanel(2);
-		ddp3 = new DisplayDetailsPanel(3);
-		ddp4 = new DisplayDetailsPanel(4);
-		ddp5 = new DisplayDetailsPanel(5);
-		ddp6 = new DisplayDetailsPanel(6);
-		ddp7 = new DisplayDetailsPanel(7);
-		ddp8 = new DisplayDetailsPanel(8);
-		ddp9 = new DisplayDetailsPanel(9);
-		ddp10 = new DisplayDetailsPanel(10);
+		ddp2 = new ScriptCreatorDetailBox(2);
+		ddp3 = new ScriptCreatorDetailBox(3);
+		ddp4 = new ScriptCreatorDetailBox(4);
+		ddp5 = new ScriptCreatorDetailBox(5);
+		ddp6 = new ScriptCreatorDetailBox(6);
+		ddp7 = new ScriptCreatorDetailBox(7);
+		ddp8 = new ScriptCreatorDetailBox(8);
+		ddp9 = new ScriptCreatorDetailBox(9);
+		ddp10 = new ScriptCreatorDetailBox(10);
 		btnbox = btnBox();
 
 		vertBox = Box.createVerticalBox();

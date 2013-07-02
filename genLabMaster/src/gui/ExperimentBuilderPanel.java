@@ -40,9 +40,9 @@ public class ExperimentBuilderPanel extends JPanel{
 
 	public Experiment builderExperiment = null;
 	
-	private ToolsBox toolsBox = new ToolsBox(hasBeenSaved);
-	private ViewBox viewBox = new ViewBox();
-	private DetailsBox detailsBox = new DetailsBox();
+	public ToolsBox toolsBox = new ToolsBox(hasBeenSaved);
+	public ViewBox viewBox = new ViewBox();
+	public DetailsBox detailsBox = new DetailsBox();
 	
 	public ExperimentBuilderPanel()
 	{

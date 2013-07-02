@@ -368,8 +368,7 @@ public class ViewBox extends JPanel implements TreeSelectionListener
 	 */
 	private DefaultMutableTreeNode initializeTreeNodes()
 	{
-		Experiment ex = GenLab.getInstance().experiment;
-		System.out.println("Wasn't null babe");
+		Experiment ex = GenLab.getInstance().builderP.builderExperiment;
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(ex);
 		for (Block b : ex.blocks)
