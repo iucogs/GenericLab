@@ -29,6 +29,7 @@ import experiment.Experiment;
 import experiment.Trial;
 import experiment.Display.DisplayType;
 import experiment.Display.PositionType;
+import gui.AbstractGenlabPanel;
 import gui.ExperimentBuilderPanel;
 import gui.HolderPanel;
 import gui.ScriptSetupPanel;
@@ -418,7 +419,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	 * Switch the view to a given panel.
 	 * @param scriptCreatorP2
 	 */
-	public void switchToPanel(JPanel panel) {
+	public void switchToPanel(AbstractGenlabPanel panel) {
 		holderP.showPanel(panel);
 	}
 

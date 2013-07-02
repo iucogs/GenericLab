@@ -19,20 +19,31 @@ import experiment.Experiment;
 import net.miginfocom.swing.MigLayout;
 
 
-public class HomePanel extends JPanel {
+public class HomePanel extends AbstractGenlabPanel{
 
 	private JButton createExperimentJB, loadExperimentJB,
 					loadScriptJB, loadJsonJB, loadServerJB,
 					createScriptJB, createFancyJB,
 					backToIntroJB;
-	
+		
 	public HomePanel(){
 		this.setBackground(new Color(200,200,200));
 		setupIntroButtons();
 		doHomePanel();
 	}
 
-	public void doHomePanel()
+	@Override
+	public boolean loadPanel() {
+		doHomePanel();
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		return true;
+	}
+	
+	private void doHomePanel()
 	{
 		//GenLab.getInstance().experiment = new Experiment();
 		if (GenLab.getInstance().experiment != null)
@@ -116,7 +127,6 @@ public class HomePanel extends JPanel {
 		createFancyJB = new JButton("Use new script creator");
 		createFancyJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				GenLab.getInstance().builderP.doBuildLayout();
 				GenLab.getInstance().switchToPanel(GenLab.getInstance().builderP);
 			}
 		});

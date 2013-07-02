@@ -31,11 +31,23 @@ import core.GenLab;
 
 import net.miginfocom.swing.MigLayout;
 
-public class NetPanel extends JPanel {
+public class NetPanel extends AbstractGenlabPanel {
 
 	JTable table;
 	JScrollPane jsp;
 	GenLab genLab = GenLab.getInstance();
+	
+	@Override
+	public boolean loadPanel() {
+		//TODO: move constructor to here
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		return true;
+	}
+	
 	
 	public NetPanel(){
 		

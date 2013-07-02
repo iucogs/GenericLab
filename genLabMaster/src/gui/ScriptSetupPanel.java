@@ -21,7 +21,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Vector;
 
-public class ScriptSetupPanel extends JPanel {
+public class ScriptSetupPanel extends AbstractGenlabPanel {
 
 	JTextField fileJTF, repJTF, delayJTF, horizJTF, vertJTF, promptJTF;
 	JButton browseJB, browseRemoteJB, saveToJsonJB;
@@ -39,6 +39,17 @@ public class ScriptSetupPanel extends JPanel {
 
 	private File scriptDirectory;
 
+	@Override
+	public boolean loadPanel() {
+		//TODO:  Do init here
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		return true;
+	}
+	
 	public ScriptSetupPanel(){
 
 		Box hbox1, hbox2, hbox3, hbox4, hbox5, vertbox;

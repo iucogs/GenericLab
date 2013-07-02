@@ -34,7 +34,7 @@ import experiment_builder.DetailsBox;
 import experiment_builder.ToolsBox;
 import experiment_builder.ViewBox;
 
-public class ExperimentBuilderPanel extends JPanel{
+public class ExperimentBuilderPanel extends AbstractGenlabPanel{
 
 	private boolean hasBeenSaved = false;
 
@@ -44,12 +44,22 @@ public class ExperimentBuilderPanel extends JPanel{
 	public ViewBox viewBox = new ViewBox();
 	public DetailsBox detailsBox = new DetailsBox();
 	
-	public ExperimentBuilderPanel()
-	{
-		
+	@Override
+	public boolean loadPanel() {
+		setupPanel();
+		return true;
+	}
+
+	@Override
+	public boolean leavePanel() {
+		// TODO ADD DIALOG: If it hasn't been saved, are you sure you want to leave?
+		return true;
 	}
 	
-	public void doBuildLayout() {
+	/**
+	 * Sets up the panel for another use.  Resets the hasBeenSaved variable.
+	 */
+	public void setupPanel() {
 		if (GenLab.getInstance().experiment == null)
 			builderExperiment = new Experiment();
 		Experiment ex = GenLab.getInstance().experiment;
@@ -90,7 +100,6 @@ public class ExperimentBuilderPanel extends JPanel{
 	
 	public void setHasBeenSaved(boolean b) {
 		hasBeenSaved = true;
-	}
-	
+	}	
 }
 	

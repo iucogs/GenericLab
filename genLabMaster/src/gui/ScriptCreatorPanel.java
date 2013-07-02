@@ -9,7 +9,7 @@ import java.lang.*;
 import java.io.*;
 import java.util.*;
 
-public class ScriptCreatorPanel extends JPanel {
+public class ScriptCreatorPanel extends AbstractGenlabPanel {
 
 	JTextField numtrialsJTF;
 	JLabel trialsInJL;
@@ -33,6 +33,18 @@ public class ScriptCreatorPanel extends JPanel {
 	String ts;
 	String scriptString;
 
+	@Override
+	public boolean loadPanel() {
+		//TODO:  Do init here
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		//TODO: Have we saved our changes?  Do we want to use the experiment?
+		return true;
+	}
+	
 	public ScriptCreatorPanel(){
 
 		Box hbox1, hbox2, btnbox; 

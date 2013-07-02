@@ -41,7 +41,7 @@ import java.net.URL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-public class PresentationPanel extends JPanel {
+public class PresentationPanel extends AbstractGenlabPanel {
 
 	// boolean xhair, eotMsg, dot;
 	int centerxpoint, centerypoint;
@@ -72,6 +72,18 @@ public class PresentationPanel extends JPanel {
 	// Vector realizedPlayerVector;
 	public int videoPanCtr = 0;
 
+	@Override
+	public boolean loadPanel() {
+		//TODO: Move constructor to here / create a doLayout type method to be called here.
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		return true;
+	}
+	
+	
 	public PresentationPanel() {
 		// /Init Vars
 		thisTrial = new Vector();

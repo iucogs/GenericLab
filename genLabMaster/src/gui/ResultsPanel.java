@@ -8,7 +8,7 @@ import java.lang.*;
 import java.io.*;
 import java.util.*;
 
-public class ResultsPanel extends JPanel {
+public class ResultsPanel extends AbstractGenlabPanel {
 
 	public JTextArea resultsJTA;
 	JScrollPane pane;
@@ -17,6 +17,18 @@ public class ResultsPanel extends JPanel {
 	String fileContent = "";
         String rawDataFileContent = "";
 
+        @Override
+    	public boolean loadPanel() {
+    		//TODO: move/rewrite constructor to be called here
+    		return true;
+    	}
+    	
+    	@Override
+    	public boolean leavePanel() {
+    		return true;
+    	}
+    	    
+        
 	public ResultsPanel(){
 
 		setBackground(resultsGreen);

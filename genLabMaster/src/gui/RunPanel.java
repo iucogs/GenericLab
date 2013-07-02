@@ -8,12 +8,24 @@ import core.GenLab;
 import java.awt.*;
 import java.awt.event.*;
 
-public class RunPanel extends JPanel {
+public class RunPanel extends AbstractGenlabPanel {
 
 	public PresentationPanel presPan;
 	public JButton startJB, instructionsJB;
 	public  JLabel feedbackJL, promptJL, blankJL;
 
+	@Override
+	public boolean loadPanel() {
+		//TODO:  Do init here
+		return true;
+	}
+	
+	@Override
+	public boolean leavePanel() {
+		return true;
+	}
+	
+	
 	public RunPanel(){
 		///Setup Components
 		presPan = new PresentationPanel();
