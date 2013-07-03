@@ -48,7 +48,7 @@ public class RunPanel extends AbstractGenlabPanel {
 		});
 		instructionsJB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(GenLab.getInstance(), GenLab.getInstance().experiment.instructions,
+				JOptionPane.showMessageDialog(GenLab.getInstance(), GenLab.getInstance().getExperiment().instructions,
 						"Instructions", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});

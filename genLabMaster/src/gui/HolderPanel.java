@@ -84,7 +84,7 @@ public class HolderPanel extends JPanel {
 	}
 	
 	public void updateLabel() {
-		if (GenLab.getInstance().experiment == null)
+		if (GenLab.getInstance().getExperiment() == null)
 		{
 			topBarExperimentLabel.setForeground(Color.red);
 			topBarExperimentLabel.setText("No Experiment active. Load or create one to use.");
@@ -92,7 +92,7 @@ public class HolderPanel extends JPanel {
 		else
 		{
 			topBarExperimentLabel.setForeground(Color.green.darker().darker());
-			topBarExperimentLabel.setText("Current Experiment: " + GenLab.getInstance().experiment.name);
+			topBarExperimentLabel.setText("Current Experiment: " + GenLab.getInstance().getExperiment().name);
 		}
 	}
 }

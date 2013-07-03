@@ -46,7 +46,7 @@ public class HomePanel extends AbstractGenlabPanel{
 	private void doHomePanel()
 	{
 		//GenLab.getInstance().experiment = new Experiment();
-		if (GenLab.getInstance().experiment != null)
+		if (GenLab.getInstance().getExperiment() != null)
 			doExperimentView();
 		else
 			doIntroMenu();
@@ -56,7 +56,10 @@ public class HomePanel extends AbstractGenlabPanel{
 		this.removeAll();
 		MigLayout layout = new MigLayout("align center","push[][]push","push[][][]push");
 		this.setLayout(layout);	
-		this.add(new JLabel("Choose an option..."),"cell 0 0,span 2,align center");
+		JLabel introLabel = new JLabel("No experiment active.  Load or create one.");
+		introLabel.setFont(introLabel.getFont().deriveFont(13f));
+		//introLabel.setForeground(Color.red);
+		this.add(introLabel,"cell 0 0,span 2,align center");
 		this.add(createExperimentJB,"cell 0 1,w 200!, h 100!,align right");
 		this.add(loadExperimentJB,"cell 1 1,w 200!, h 100!,align left,push");
 		this.validate();
@@ -178,7 +181,7 @@ public class HomePanel extends AbstractGenlabPanel{
 		mainButton.setVerticalTextPosition(SwingConstants.BOTTOM);
 		mainButton.setHorizontalTextPosition(SwingConstants.CENTER);
 		JTextArea experimentTA = new JTextArea();
-		experimentTA.setText("ex:"+GenLab.getInstance().experiment.name +
+		experimentTA.setText("ex:"+GenLab.getInstance().getExperiment().name +
 				"\n Second Line:");
 		experimentTA.setEditable(false);
 		experimentTA.setBackground(new Color(120,220,120));

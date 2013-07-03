@@ -60,9 +60,10 @@ public class ExperimentBuilderPanel extends AbstractGenlabPanel{
 	 * Sets up the panel for another use.  Resets the hasBeenSaved variable.
 	 */
 	public void setupPanel() {
-		if (GenLab.getInstance().experiment == null)
+		if (GenLab.getInstance().getExperiment() == null)
 			builderExperiment = new Experiment();
-		Experiment ex = GenLab.getInstance().experiment;
+		else
+			builderExperiment = GenLab.getInstance().getExperiment();
 		hasBeenSaved = false;
 		this.removeAll();
 		MigLayout layout = new MigLayout("fill","","[grow 0][]");

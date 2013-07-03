@@ -98,7 +98,7 @@ public class ToolsBox extends JPanel
 				boolean success = GenLab.getInstance().setupExperimentFromJson();
 				if (success)
 				{
-					GenLab.getInstance().builderP.setupPanel();
+					GenLab.getInstance().builderP.loadPanel();
 				}
 			}
 		});
