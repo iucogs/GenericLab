@@ -2,6 +2,10 @@ package gui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,9 +27,10 @@ public class HomePanel extends AbstractGenlabPanel{
 
 	private JButton createExperimentJB, loadExperimentJB,
 					loadScriptJB, loadJsonJB, loadServerJB,
-					createScriptJB, createFancyJB,
+					createScriptJB, builderJB,
 					backToIntroJB;
-		
+	private JLabel optionsTextJL = new JLabel("Scroll over an option.");	
+	
 	public HomePanel(){
 		this.setBackground(new Color(200,200,200));
 		setupIntroButtons();
@@ -91,7 +96,7 @@ public class HomePanel extends AbstractGenlabPanel{
 		
 		///Setup layout
 		this.add(backToIntroJB,"cell 1 0,spany 2,w :180, h 75!,align right");
-		this.add(createFancyJB,"cell 0 0,w :200:, h 75!");
+		this.add(builderJB,"cell 0 0,w :200:, h 75!");
 		this.add(createScriptJB,"cell 0 1,w :200:, h 75!");
 		
 	//	this.add(backToIntroJB,"dock south, h 40!,align center");
@@ -127,8 +132,8 @@ public class HomePanel extends AbstractGenlabPanel{
 				GenLab.getInstance().switchToPanel(GenLab.getInstance().scriptCreatorP);
 			}
 		});
-		createFancyJB = new JButton("Use new script creator");
-		createFancyJB.addActionListener(new ActionListener(){
+		builderJB = new JButton("Use new script creator");
+		builderJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				GenLab.getInstance().switchToPanel(GenLab.getInstance().builderP);
 			}
@@ -170,32 +175,102 @@ public class HomePanel extends AbstractGenlabPanel{
 		this.removeAll();
 		MigLayout layout = new MigLayout("align center","push[align center]push","push[][][][]push");
 		this.setLayout(layout);	
-		this.add(new JLabel("Click to Run"),"cell 0 0");
-		JButton mainButton = new JButton("");
-		mainButton.addActionListener(new ActionListener(){
+		JButton runButton = new JButton("Run");
+		runButton.setIcon(new ImageIcon(this.getClass().getResource("/icons/forward_arrow_20.png")));		
+		runButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
 				GenLab.getInstance().switchToPanel(GenLab.getInstance().runP);
 			}
 		});
-		mainButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-		mainButton.setHorizontalTextPosition(SwingConstants.CENTER);
 		JTextArea experimentTA = new JTextArea();
-		experimentTA.setText("ex:"+GenLab.getInstance().getExperiment().name +
-				"\n Second Line:");
+		experimentTA.setText("Experiment:"+GenLab.getInstance().getExperiment().name + "\n\n");
 		experimentTA.setEditable(false);
 		experimentTA.setBackground(new Color(120,220,120));
-		mainButton.setBackground(new Color(80,255,80));
-		mainButton.setLayout(new MigLayout("","push[]push","push[]push"));
-		mainButton.add(experimentTA,"align center,w 200!,h 50!");
-		this.add(mainButton,
-				"cell 0 1, w 400!, h 100!");
-		this.add(new JLabel("Option text goes here."),"cell 0 2");
-		this.add(new JLabel("Options go here."),"cell 0 3");
+		experimentTA.setBorder(BorderFactory.createEtchedBorder());
+		optionsTextJL.setFont(optionsTextJL.getFont().deriveFont(13f));
 
-		//this.add(createExperimentJB,"cell 0 1,w 200!, h 100!,align right");
+		this.add(runButton,"align center,w 80!, h 30!,wrap"); 
+		this.add(experimentTA,"align center,wrap,gapbottom unrelated");
+		this.add(optionsTextJL,"gapbottom unrelated,wrap");
+		
+		JButton unloadJB = new JButton();
+		unloadJB.setName("Unload this experiment to load or create a new one.");
+		unloadJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/delete_20.png")));
+		unloadJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				GenLab.getInstance().setExperiment(null);
+				GenLab.getInstance().homeP.loadPanel();
+			}
+		});
+		JButton editJB = new JButton();
+		editJB.setName("Edit this experiment.");
+		editJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/edit_20.png")));
+		editJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				GenLab.getInstance().switchToPanel(GenLab.getInstance().builderP);
+			}
+		});
+		JButton duplicateJB = new JButton();
+		duplicateJB.setName("Create an offline, JSON copy of this experiment.");
+		duplicateJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/save_as_20.png")));		
+		duplicateJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){				
+				boolean success = GenLab.getInstance().saveExperimentToJson();
+				if (success)
+					optionsTextJL.setText("Saved.");
+				else
+					optionsTextJL.setText("Failed to save a copy.");
+			}
+		});		
+		JButton saveToNetJB = new JButton();
+		saveToNetJB.setName("Publish this experiment to the internet.");
+		saveToNetJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/up_20.png")));		
+		saveToNetJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+						  "Not yet implemented.",
+						  "", JOptionPane.ERROR_MESSAGE);
+			}
+		});	
+		JButton viewResultsJB = new JButton();
+		viewResultsJB.setName("View results of this experiment. Must be from server.");
+		viewResultsJB.setIcon(new ImageIcon(this.getClass().getResource("/icons/find_20.png")));
+		viewResultsJB.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				JOptionPane.showMessageDialog(GenLab.getInstance(),
+						  "Not yet implemented.",
+						  "", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		
+		this.add(unloadJB,"w 50!, h 50!,split 5");
+		this.add(editJB,"w 50!, h 50!");
+		this.add(duplicateJB,"w 50!, h 50!");
+		this.add(saveToNetJB,"w 50!, h 50!");
+		this.add(viewResultsJB,"w 50!, h 50!");
+		
 		this.validate();
 		this.repaint();
+		
+		MouseListener highlightListener = new MouseListener(){
+			public void mouseClicked(MouseEvent arg0) {};
+			public void mouseEntered(MouseEvent e) {
+				JButton jb = (JButton)e.getSource();
+				optionsTextJL.setText(jb.getName());
+			}
+			public void mouseExited(MouseEvent arg0) {
+				optionsTextJL.setText("Scroll over an option.");
+			};
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+		};
+		unloadJB.addMouseListener(highlightListener);
+		editJB.addMouseListener(highlightListener);
+		duplicateJB.addMouseListener(highlightListener);
+		saveToNetJB.addMouseListener(highlightListener);
+		viewResultsJB.addMouseListener(highlightListener);
+
 	}
 	
 }
