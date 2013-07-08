@@ -92,7 +92,7 @@ public class HolderPanel extends JPanel {
 		else
 		{
 			topBarExperimentLabel.setForeground(Color.green.darker().darker());
-			topBarExperimentLabel.setText("Current Experiment: " + GenLab.getInstance().getExperiment().name);
+			topBarExperimentLabel.setText("Active Experiment: " + GenLab.getInstance().getExperiment().name);
 		}
 	}
 }

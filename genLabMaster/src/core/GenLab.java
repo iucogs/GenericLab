@@ -246,7 +246,9 @@ public class GenLab extends JApplet implements ComponentListener {
 				if (displayCtr == (currDisplays.size() - 1)) {
 					startRxnTimeMeasure = System.currentTimeMillis();
 					acceptKeyStroke = true;
-					runP.promptJL.setText(getExperiment().promptString);
+					runP.promptJL.setText(currBlock.blockPrompt);
+					/*TODO: replace updating the prompt string somewhere smarter, 
+					perhaps with runP.setPrompt or .updatePrompt */
 				}
 
 				timer1a.stop();
@@ -295,12 +297,10 @@ public class GenLab extends JApplet implements ComponentListener {
 					} else if ((getExperiment().includeAllNumbers) || (getExperiment().includeAllLetters)) {
 						runP.feedbackJL.setText(keyStruck);
 					}
-					if (!getExperiment().promptString.equals("")) {
-						runP.promptJL.setText("");
-					}
+					runP.promptJL.setText("");
+					//TODO clear the prompt somewhere better? prolly part of taking all run functionality out of GenLab.java
 
 				} else {
-
 					runP.feedbackJL.setText("");
 					timer2a.stop();
 					timer2b.start();
@@ -350,7 +350,7 @@ public class GenLab extends JApplet implements ComponentListener {
 		if (trialCtr >= currBlock.trials.size()) { //Experiment over!  //TODO: Restructure this?
 			printResults();
 			runP.promptJL.setText("Experiment Over");
-			if (!getExperiment().instructions.equals("")) {
+			if (!getExperiment().experimentInstructions.equals("")) {
 				runP.instructionsJB.setVisible(true);
 			}
 			runP.startJB.setText("Start Experiment");
@@ -574,7 +574,7 @@ public class GenLab extends JApplet implements ComponentListener {
 			}
 		}
 		runP.promptJL.setText("");
-		if (getExperiment().instructions.equals("")) {
+		if (getExperiment().experimentInstructions.equals("")) {
 			runP.instructionsJB.setVisible(false);
 		} else {
 			runP.instructionsJB.setVisible(true);
@@ -631,7 +631,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	private void abortExperiment() {
 		runningExperiment = false;
 		runP.startJB.setText("Start Experiment");
-		if (!getExperiment().instructions.equals("")) 
+		if (!getExperiment().experimentInstructions.equals("")) 
 			runP.instructionsJB.setVisible(true);
 		timer1a.stop();
 		timer1b.stop();

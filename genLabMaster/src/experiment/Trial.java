@@ -14,16 +14,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class Trial implements Iterable<Display> {
 
-	public String correctKey = "";
-	public String trialType = "";
 	//@JsonManagedReference
 	public List<Display> displays = new LinkedList<Display>();
 	//@JsonBackReference
 	//public Block parent;
-	
-	//Configuration Vars
-	public Boolean randomizeDisplayOrder = false;
 
+	public String correctKey = "";
+	public String trialType = "";
+	public Boolean randomizeDisplayOrder = false;
+	public String trialPrompt = "";
+	
 	//Metadata
 	public String name = "Untitled Trial";
 	/**

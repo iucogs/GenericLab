@@ -61,7 +61,7 @@ public class DetailsBox extends JPanel
 		this.repaint();
 	}
 	
-	private static DocumentListener resizeDocumentListener = new DocumentListener(){
+	private static DocumentListener refreshBuilderPDocumentListener = new DocumentListener(){
 		public void changedUpdate(DocumentEvent arg0) {
 			refreshBuilderP();
 		}
@@ -80,11 +80,11 @@ public class DetailsBox extends JPanel
 	
 	private static class ExperimentModel //C
 	{
-		static JFormattedTextField name,promptString,
+		static JFormattedTextField name,
 							trialTypes,usableKeys; //comma de-liniated for now		
 		static JCheckBox randomizeBlockOrder,giveFeedback,
 							includeAllNumbers,includeAllLetters;
-		static JLabel nameL,promptStringL,trialTypesL,usableKeysL,
+		static JLabel nameL,trialTypesL,usableKeysL,
 						randomizeBlockOrderL,giveFeedbackL,includeAllNumbersL,includeAllLettersL;
 		static Experiment ex;
 				
@@ -100,25 +100,7 @@ public class DetailsBox extends JPanel
 					if (val != null && val != "")
 						ex.name = val;
 				}});
-			name.getDocument().addDocumentListener(resizeDocumentListener);
-			promptString = new JFormattedTextField(ex.promptString);
-			promptString.addPropertyChangeListener(new PropertyChangeListener(){
-				public void propertyChange(PropertyChangeEvent arg0) {
-					String val = (String)promptString.getValue();
-					if (val != null)
-						ex.promptString = val;
-				}});
-			promptString.getDocument().addDocumentListener(new DocumentListener()
-			{
-				public void changedUpdate(DocumentEvent arg0) {update();}
-				public void insertUpdate(DocumentEvent arg0) {update();}
-				public void removeUpdate(DocumentEvent arg0) {update();}
-				private void update()
-				{
-					GenLab.getInstance().builderP.validate();
-					GenLab.getInstance().builderP.repaint();
-
-				}});
+			name.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			trialTypes = new JFormattedTextField(listToCommaDeliniated(ex.trialTypes));
 			trialTypes.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
@@ -126,7 +108,7 @@ public class DetailsBox extends JPanel
 					if (val != null)
 						ex.trialTypes =  commaDeliniatedToList(val);
 				}});
-			trialTypes.getDocument().addDocumentListener(resizeDocumentListener);
+			trialTypes.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			usableKeys = new JFormattedTextField(listToCommaDeliniated(ex.usableKeys));
 			usableKeys.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
@@ -134,7 +116,7 @@ public class DetailsBox extends JPanel
 					if (val != null)
 						ex.usableKeys =  commaDeliniatedToList(val);					
 				}});
-			usableKeys.getDocument().addDocumentListener(resizeDocumentListener);
+			usableKeys.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			///Check Boxes
 			randomizeBlockOrder = new JCheckBox();
 			if (ex.randomizeBlockOrder == null)
@@ -167,13 +149,10 @@ public class DetailsBox extends JPanel
 		private static void setupLabels() {
 			nameL = new JLabel("Experiment Name:");
 			nameL.setToolTipText("The title of this experiment; be descriptive and consice.");
-			promptStringL = new JLabel("Prompt:");
-			promptStringL.setToolTipText("This prompt is shown below the experiment window" +
-											" throughout the experiment.");
 			trialTypesL = new JLabel("Trial Types:");
 			trialTypesL.setToolTipText("Enter category names for trials, to be used to" + 
 											" catagorize results.  Comma separated.");
-			usableKeysL = new JLabel("Usable Keys:");
+			usableKeysL = new JLabel("Response Keys:");
 			usableKeysL.setToolTipText("Enter the keys subjects may press during the experiment." + 
 											" Keys listed will register as correct or incorrect responses "+
 											" wheras keys not listed will be ignored.  Comma separated");
@@ -181,10 +160,10 @@ public class DetailsBox extends JPanel
 			randomizeBlockOrderL.setToolTipText("Randomize the order of all reptitions of all blocks.");
 			giveFeedbackL = new JLabel("Give Feedback:");
 			giveFeedbackL.setToolTipText("Show 'Correct' or 'Incorrect' after each response.");
-			includeAllNumbersL = new JLabel("Use All Numbers:");
-			includeAllNumbersL.setToolTipText("Include all numbers as usable keys.");
-			includeAllLettersL = new JLabel("Use All Letters:");
-			includeAllLettersL.setToolTipText("Include all letters as usable keys.");
+			includeAllNumbersL = new JLabel("Use All Numbers as Response Keys:");
+			includeAllNumbersL.setToolTipText("Include all numbers as usable keys the user can respond with.");
+			includeAllLettersL = new JLabel("Use All Letters as Response Keys:");
+			includeAllLettersL.setToolTipText("Include all letters as usable keys the user can respond with.");
 		}
 		
 		private static String listToCommaDeliniated(List<String> stringList)
@@ -210,11 +189,11 @@ public class DetailsBox extends JPanel
 	
 	private static class BlockModel
 	{
-		static JFormattedTextField name;
+		static JFormattedTextField name, blockPrompt;
 		static JSpinner reps, delayBetweenTrials;
 		static JCheckBox randomizeTrialOrder,leaveDisplaysOn;
 		static JButton font;
-		static JLabel nameL,
+		static JLabel nameL, blockPromptL,
 					repsL,delayBetweenTrialsL,
 					randomizeTrialOrderL,leaveDisplaysOnL,
 					fontL;
@@ -231,7 +210,16 @@ public class DetailsBox extends JPanel
 					if (val != null && val != "")
 						b.name = val;
 				}});
-			name.getDocument().addDocumentListener(resizeDocumentListener);
+			name.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
+			blockPrompt = new JFormattedTextField(b.blockPrompt);
+			blockPrompt.addPropertyChangeListener(new PropertyChangeListener(){
+				public void propertyChange(PropertyChangeEvent arg0) {
+					String val = (String)blockPrompt.getValue();
+					if (val != null)
+						b.blockPrompt = val;
+				}});
+			blockPrompt.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
+			
 			reps = new JSpinner();
 			reps.setModel(new SpinnerNumberModel(1,1,Integer.MAX_VALUE,1));
 			reps.setValue(b.reps);
@@ -284,6 +272,9 @@ public class DetailsBox extends JPanel
 		private static void setupLabels() {
 			nameL = new JLabel("Block Name:");
 			nameL.setToolTipText("The name of this block.  Ex: 'Training Block'.");
+			blockPromptL = new JLabel("Prompt:");
+			blockPromptL.setToolTipText("This prompt is shown directly below the experiment window" +
+											" during all trials in this block.");
 			repsL = new JLabel("Number of Reptitions:");
 			repsL.setToolTipText("The number of times to run all the trials in this block.");
 			delayBetweenTrialsL = new JLabel("Delay Between Trials(ms):");
@@ -320,7 +311,7 @@ public class DetailsBox extends JPanel
 					if (val != null)
 						t.name = val;
 				}});
-			name.getDocument().addDocumentListener(resizeDocumentListener);
+			name.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			trialType = new JFormattedTextField(t.trialType);
 			trialType.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
@@ -328,7 +319,7 @@ public class DetailsBox extends JPanel
 					if (val != null && val != "")
 						t.trialType = val;
 				}});
-			trialType.getDocument().addDocumentListener(resizeDocumentListener);
+			trialType.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			correctKey = new JFormattedTextField(t.correctKey);
 			correctKey.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
@@ -336,7 +327,7 @@ public class DetailsBox extends JPanel
 					if (val != null && val != "")
 						t.correctKey = val;
 				}});
-			correctKey.getDocument().addDocumentListener(resizeDocumentListener);
+			correctKey.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			randomizeDisplayOrder = new JCheckBox();
 			randomizeDisplayOrder.setSelected(t.randomizeDisplayOrder);
 			randomizeDisplayOrder.addActionListener(new ActionListener(){
@@ -410,7 +401,7 @@ public class DetailsBox extends JPanel
 						System.out.println("wAMAMBAN: val:" + val);
 					}
 				}});
-			textOrPath.getDocument().addDocumentListener(resizeDocumentListener);
+			textOrPath.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			
 			positionX = new JSpinner();
 			positionX.setModel(new SpinnerNumberModel(0,0,Integer.MAX_VALUE,10));
@@ -496,8 +487,6 @@ public class DetailsBox extends JPanel
 		this.setLayout(layout);
 		this.add(ExperimentModel.nameL,"");
 		this.add(ExperimentModel.name,"wrap");
-		this.add(ExperimentModel.promptStringL,"");
-		this.add(ExperimentModel.promptString,"wrap");
 		this.add(ExperimentModel.trialTypesL,"");
 		this.add(ExperimentModel.trialTypes,"wrap");
 		this.add(ExperimentModel.usableKeysL,"");
@@ -519,6 +508,8 @@ public class DetailsBox extends JPanel
 		this.setLayout(layout);
 		this.add(BlockModel.nameL,"");
 		this.add(BlockModel.name,"wrap");
+		this.add(BlockModel.blockPromptL,"");
+		this.add(BlockModel.blockPrompt,"wrap");
 		this.add(BlockModel.repsL,"");	
 		this.add(BlockModel.reps,"wrap");	
 		this.add(BlockModel.randomizeTrialOrderL,"");

@@ -25,6 +25,8 @@ public class Block implements Iterable<Trial>{
 	public boolean leaveDisplaysOn = false;
 	public Font font = null;
 	public int delayBetweenTrials = 0;
+	public String blockInstructions = "";
+	public String blockPrompt = "";
 
 	//Metadata
 	public String name = super.toString();

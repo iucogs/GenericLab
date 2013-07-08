@@ -43,6 +43,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -126,7 +127,7 @@ public class ExperimentUtilities {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-		
+		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);	
 		mapper.addMixInAnnotations(Point.class, PointMixIn.class);
 		mapper.addMixInAnnotations(Font.class, FontMixIn.class);
 		FontJsonDeserializer fontD = (new ExperimentUtilities()).new FontJsonDeserializer();
@@ -139,6 +140,7 @@ public class ExperimentUtilities {
 		{
 			ex = mapper.readValue(new File(filename), Experiment.class);
 			System.out.println("EX font size is " +ex.blocks.get(0).font.getSize());
+			ex.experimentFilename = filename;
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -195,8 +197,8 @@ public class ExperimentUtilities {
 	{
 		ScriptSetupPanel exptVarsP = GenLab.getInstance().scriptSetupP;
 		Block block = ex.blocks.get(0);
-		ex.scriptFilename = exptVarsP.getScriptFilename();
-		if (ex.scriptFilename.equals("")) {
+		ex.experimentFilename = exptVarsP.getScriptFilename();
+		if (ex.experimentFilename.equals("")) {
 			varError(exptVarsP,0, "");  //TODO keep varError setup?
 			return false;
 		}
@@ -224,9 +226,9 @@ public class ExperimentUtilities {
 		
 		boolean usePrompt = exptVarsP.getPrompt();
 		if (usePrompt)
-			ex.promptString = exptVarsP.getPromptString();
+			block.blockPrompt = exptVarsP.getPromptString();
 		else
-			ex.promptString = "";
+			block.blockPrompt = "";
 		
 		ex.giveFeedback = exptVarsP.getFeedback();
 		try {
@@ -265,17 +267,17 @@ public class ExperimentUtilities {
 
 		scriptString = "";
 		trialString = "";
-		ex.instructionsFilename = "";
+		ex.instructionsFilename_SCRIPT_LEGACY = "";
 		
 		String tempDebugString = "";
 		try {
-			File scriptFile = new File(ex.scriptFilename);
+			File scriptFile = new File(ex.experimentFilename);
 			BufferedReader br = new BufferedReader(new FileReader(scriptFile)); 
 			//TODO: Change reader for applet?  Seems OK for now!.
 			scriptString = br.readLine();
 			if (scriptString.startsWith("instructions")) {
 				String[] temp = scriptString.split(" ", 2);
-				ex.instructionsFilename = temp[1];
+				ex.instructionsFilename_SCRIPT_LEGACY = temp[1];
 				scriptString = br.readLine();
 				if (scriptString.trim().equals("")) {
 					scriptString = br.readLine();
@@ -538,19 +540,19 @@ public class ExperimentUtilities {
 		}
 		ex.blocks.get(0).trials = trials;
 		// JOptionPane.showMessageDialog(this, "test");
-		ex.instructions = "";
-		if (!ex.instructionsFilename.equals("")) {
+		ex.experimentInstructions = "";
+		if (!ex.instructionsFilename_SCRIPT_LEGACY.equals("")) {
 			String instructionsString = "";
 			try {
 
 				String instructionsPathPlusFilename = ex.directory
-						 + ex.instructionsFilename;
+						 + ex.instructionsFilename_SCRIPT_LEGACY;
 				File scriptFile = new File(instructionsPathPlusFilename);
 				BufferedReader br = new BufferedReader(new FileReader(
 						scriptFile));
 
 				while ((instructionsString = br.readLine()) != null) {
-					ex.instructions = ex.instructions + "\n"
+					ex.experimentInstructions = ex.experimentInstructions + "\n"
 							+ instructionsString;
 				}
 			} catch (FileNotFoundException fnfe) {
