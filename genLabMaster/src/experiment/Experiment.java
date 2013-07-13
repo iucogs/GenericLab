@@ -16,7 +16,7 @@ public class Experiment implements Iterable<Block>{
 	/*TODO LIST:
 	 *	ROB CHANGES:
 	 *		CHECK implement block level prompts
-	 *		implement display level Prompt strings
+	 *		implement Trial level Prompt strings
 	 *			CHECK field has been added
 	 *			-add them to builder  
 	 *			-actually use them during run
@@ -38,8 +38,7 @@ public class Experiment implements Iterable<Block>{
 	public Boolean randomizeBlockOrder = false;
 	public Point windowPosition; // TODO Use this? Has not been implemented 7/2013
 	public Dimension windowSize; // TODO Use this? Has not been implemented 7/2013
-	public Boolean giveFeedback = false,
-					includeAllNumbers = false,
+	public boolean includeAllNumbers = false,
 					includeAllLetters = false;
 	//public String promptString = "";
 	

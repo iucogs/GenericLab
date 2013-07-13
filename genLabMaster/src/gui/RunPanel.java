@@ -16,7 +16,15 @@ public class RunPanel extends AbstractGenlabPanel {
 
 	@Override
 	public boolean loadPanel() {
-		//TODO:  Do init here
+		if (GenLab.getInstance().getExperiment() != null)
+		{
+			GenLab.getInstance().prepRunPanel();
+		}
+		else
+		{
+			startJB.setEnabled(false);
+			startJB.setToolTipText("Error loading script from JSON.");
+		}
 		return true;
 	}
 	

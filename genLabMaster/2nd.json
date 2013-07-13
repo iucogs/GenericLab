@@ -2,21 +2,17 @@
   "randomizeBlockOrder" : false,
   "windowPosition" : null,
   "windowSize" : null,
-  "giveFeedback" : true,
   "includeAllNumbers" : false,
   "includeAllLetters" : false,
-  "promptString" : "",
-  "name" : "Untitled Experiment",
-  "scriptFilename" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\demonstration\\demo",
-  "instructionsFilename" : "sampleinstructions.txt",
-  "instructions" : "",
-  "directory" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\demonstration\\",
-  "usableKeys" : [ "h", "g" ],
+  "name" : "\"2nd\" aka demo",
+  "experimentFilename" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\2nd.json",
+  "instructionsFilename_SCRIPT_LEGACY" : "",
+  "experimentInstructions" : "",
+  "directory" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\",
+  "usableKeys" : [ "g", "h" ],
   "trialTypes" : [ "hello", "goodbye", "strong", "homestar", "hellody" ],
   "blocks" : [ {
     "trials" : [ {
-      "correctKey" : "h",
-      "trialType" : "hello",
       "displays" : [ {
         "@id" : 1,
         "displayType" : "SOUND",
@@ -29,11 +25,12 @@
         "durationSecs" : 1.172607,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "h",
+      "trialType" : "hello",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "Untitled Trial"
     }, {
-      "correctKey" : "h",
-      "trialType" : "strong",
       "displays" : [ {
         "@id" : 2,
         "displayType" : "IMAGE",
@@ -46,11 +43,12 @@
         "durationSecs" : 0.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "h",
+      "trialType" : "strong",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "Untitled Trial"
     }, {
-      "correctKey" : "g",
-      "trialType" : "homestar",
       "displays" : [ {
         "@id" : 3,
         "displayType" : "IMAGE",
@@ -63,11 +61,12 @@
         "durationSecs" : 0.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "g",
+      "trialType" : "homestar",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "Untitled Trial"
     }, {
-      "correctKey" : "g",
-      "trialType" : "hellody",
       "displays" : [ {
         "@id" : 4,
         "displayType" : "TEXT",
@@ -80,11 +79,12 @@
         "durationSecs" : 0.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "g",
+      "trialType" : "HELLODY",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "Untitled Trial"
     }, {
-      "correctKey" : "g",
-      "trialType" : "goodbye",
       "displays" : [ {
         "@id" : 5,
         "displayType" : "SOUND",
@@ -97,11 +97,15 @@
         "durationSecs" : 1.535419,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "g",
+      "trialType" : "goodbye",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "Untitled Trial"
     } ],
     "reps" : 1,
     "randomizeTrialOrder" : true,
+    "giveFeedback" : false,
     "leaveDisplaysOn" : false,
     "font" : {
       "name" : "Arial",
@@ -109,6 +113,8 @@
       "size" : 18
     },
     "delayBetweenTrials" : 1200,
+    "blockInstructions" : "",
+    "blockPrompt" : "",
     "name" : "experiment.Block@6c7a3a30"
   } ]
 }

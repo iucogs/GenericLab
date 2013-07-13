@@ -26,7 +26,7 @@ public class Display {
 				throw new IllegalArgumentException("Invalid DisplayType value: " + value);
 			}
 	}
-	public static enum PositionType {EXACT,RANDOM,RANDOM_OFFSET,CENTER,N,S,E,W,NE,NW,SE,SW;
+	public static enum PositionType {EXACT,RANDOM,CENTER,N,S,E,W,NE,NW,SE,SW;
 		public static PositionType getValueOf(String value) {
 			value = value.toUpperCase();
 			if (value.compareTo("POSITION") == 0)

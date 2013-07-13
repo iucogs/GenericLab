@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import core.ExperimentUtilities;
 import core.GenLab;
 import experiment.Experiment;
 import net.miginfocom.swing.MigLayout;
@@ -148,15 +149,19 @@ public class HomePanel extends AbstractGenlabPanel{
 		loadJsonJB = new JButton("Load from JSON file");
 		loadJsonJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				GenLab.getInstance().setupExperimentFromJson();
-				GenLab.getInstance().homeP.doHomePanel();
+				Experiment newEx = ExperimentUtilities.loadJsonExperiment();
+				if (newEx != null)
+				{
+					GenLab.getInstance().setExperiment(newEx);
+					GenLab.getInstance().homeP.doHomePanel();
+				}
 			}
 		});
 		loadServerJB = new JButton("Load from the server");
 		loadServerJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(GenLab.getInstance(),
-											  "Not yet implemented.",
+											  "Sorry, this feature isn't availiable!",
 											  "", 
 											  JOptionPane.ERROR_MESSAGE);
 			}

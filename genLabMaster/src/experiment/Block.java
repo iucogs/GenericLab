@@ -22,6 +22,7 @@ public class Block implements Iterable<Trial>{
 	//Configuration
 	public Integer reps = 1;  //TODO: Broken or Not Yet Implemented!
 	public boolean randomizeTrialOrder = false;
+	public boolean giveFeedback = false;
 	public boolean leaveDisplaysOn = false;
 	public Font font = null;
 	public int delayBetweenTrials = 0;

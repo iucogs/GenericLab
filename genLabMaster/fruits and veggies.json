@@ -2,21 +2,17 @@
   "randomizeBlockOrder" : false,
   "windowPosition" : null,
   "windowSize" : null,
-  "giveFeedback" : false,
   "includeAllNumbers" : false,
   "includeAllLetters" : false,
-  "promptString" : "Is this a fruit or a vegetable?",
   "name" : "my simple priming expermining",
-  "scriptFilename" : "",
-  "instructionsFilename" : "",
-  "instructions" : "",
-  "directory" : "",
+  "experimentFilename" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\fruits and veggies.json",
+  "instructionsFilename_SCRIPT_LEGACY" : "",
+  "experimentInstructions" : "",
+  "directory" : "C:\\Users\\Jay\\Dropbox\\git\\JaysLocalGitRepo\\genLabMaster\\",
   "usableKeys" : [ "f", "v" ],
   "trialTypes" : [ "fruit", "veggie" ],
   "blocks" : [ {
     "trials" : [ {
-      "correctKey" : "v",
-      "trialType" : "veggie",
       "displays" : [ {
         "@id" : 1,
         "displayType" : "TEXT",
@@ -29,11 +25,12 @@
         "durationSecs" : 1.0,
         "persistTime" : 0.0
       } ],
-      "randomizeDisplayOrder" : false,
-      "name" : "veggie 2"
-    }, {
       "correctKey" : "v",
       "trialType" : "veggie",
+      "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
+      "name" : "veggie 2"
+    }, {
       "displays" : [ {
         "@id" : 2,
         "displayType" : "TEXT",
@@ -46,11 +43,12 @@
         "durationSecs" : 1.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "v",
+      "trialType" : "veggie",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "veggie 3"
     }, {
-      "correctKey" : "f",
-      "trialType" : "fruit",
       "displays" : [ {
         "@id" : 3,
         "displayType" : "TEXT",
@@ -63,11 +61,12 @@
         "durationSecs" : 1.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "f",
+      "trialType" : "fruit",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "suprise fruit"
     }, {
-      "correctKey" : "v",
-      "trialType" : "veggie",
       "displays" : [ {
         "@id" : 4,
         "displayType" : "TEXT",
@@ -80,11 +79,15 @@
         "durationSecs" : 1.0,
         "persistTime" : 0.0
       } ],
+      "correctKey" : "v",
+      "trialType" : "veggie",
       "randomizeDisplayOrder" : false,
+      "trialPrompt" : "",
       "name" : "veggie 1"
     } ],
     "reps" : 1,
-    "randomizeTrialOrder" : false,
+    "randomizeTrialOrder" : true,
+    "giveFeedback" : false,
     "leaveDisplaysOn" : false,
     "font" : {
       "name" : "Tahoma",
@@ -92,6 +95,8 @@
       "size" : 11
     },
     "delayBetweenTrials" : 0,
+    "blockInstructions" : "",
+    "blockPrompt" : "Press 'f' for fruit and 'v' for veggie.",
     "name" : "my only block"
   } ]
 }

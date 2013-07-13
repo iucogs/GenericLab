@@ -82,10 +82,10 @@ public class DetailsBox extends JPanel
 	{
 		static JFormattedTextField name,
 							trialTypes,usableKeys; //comma de-liniated for now		
-		static JCheckBox randomizeBlockOrder,giveFeedback,
+		static JCheckBox randomizeBlockOrder,
 							includeAllNumbers,includeAllLetters;
 		static JLabel nameL,trialTypesL,usableKeysL,
-						randomizeBlockOrderL,giveFeedbackL,includeAllNumbersL,includeAllLettersL;
+						randomizeBlockOrderL,includeAllNumbersL,includeAllLettersL;
 		static Experiment ex;
 				
 		private static void setupExperimentView(Experiment exToRegister)
@@ -98,7 +98,13 @@ public class DetailsBox extends JPanel
 				public void propertyChange(PropertyChangeEvent arg0) {
 					String val = (String)name.getValue();
 					if (val != null && val != "")
+					{
 						ex.name = val;
+						if (ex == GenLab.getInstance().getExperiment())
+						{
+							GenLab.getInstance().holderP.updateLabel();
+						}
+					}
 				}});
 			name.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			trialTypes = new JFormattedTextField(listToCommaDeliniated(ex.trialTypes));
@@ -126,12 +132,6 @@ public class DetailsBox extends JPanel
 				public void actionPerformed(ActionEvent e) {
 					ex.randomizeBlockOrder = randomizeBlockOrder.isSelected();
 				}});
-			giveFeedback = new JCheckBox();
-			giveFeedback.setSelected(ex.giveFeedback);
-			giveFeedback.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					ex.giveFeedback = giveFeedback.isSelected();
-				}});
 			includeAllLetters = new JCheckBox();
 			includeAllLetters.setSelected(ex.includeAllLetters);
 			includeAllLetters.addActionListener(new ActionListener(){
@@ -158,8 +158,7 @@ public class DetailsBox extends JPanel
 											" wheras keys not listed will be ignored.  Comma separated");
 			randomizeBlockOrderL = new JLabel("Randomize Block Order:");
 			randomizeBlockOrderL.setToolTipText("Randomize the order of all reptitions of all blocks.");
-			giveFeedbackL = new JLabel("Give Feedback:");
-			giveFeedbackL.setToolTipText("Show 'Correct' or 'Incorrect' after each response.");
+
 			includeAllNumbersL = new JLabel("Use All Numbers as Response Keys:");
 			includeAllNumbersL.setToolTipText("Include all numbers as usable keys the user can respond with.");
 			includeAllLettersL = new JLabel("Use All Letters as Response Keys:");
@@ -191,10 +190,10 @@ public class DetailsBox extends JPanel
 	{
 		static JFormattedTextField name, blockPrompt;
 		static JSpinner reps, delayBetweenTrials;
-		static JCheckBox randomizeTrialOrder,leaveDisplaysOn;
+		static JCheckBox randomizeTrialOrder,giveFeedback,leaveDisplaysOn;
 		static JButton font;
 		static JLabel nameL, blockPromptL,
-					repsL,delayBetweenTrialsL,
+					repsL,giveFeedbackL,delayBetweenTrialsL,
 					randomizeTrialOrderL,leaveDisplaysOnL,
 					fontL;
 		static Block b;
@@ -228,6 +227,12 @@ public class DetailsBox extends JPanel
 					b.reps = (Integer)reps.getValue();
 				}
 			});
+			giveFeedback = new JCheckBox();
+			giveFeedback.setSelected(b.giveFeedback);
+			giveFeedback.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					b.giveFeedback = giveFeedback.isSelected();
+				}});
 			delayBetweenTrials = new JSpinner();
 			delayBetweenTrials.setModel(new SpinnerNumberModel(0,0,Integer.MAX_VALUE,100));
 			delayBetweenTrials.setValue(b.delayBetweenTrials);
@@ -277,6 +282,8 @@ public class DetailsBox extends JPanel
 											" during all trials in this block.");
 			repsL = new JLabel("Number of Reptitions:");
 			repsL.setToolTipText("The number of times to run all the trials in this block.");
+			giveFeedbackL = new JLabel("Give Feedback:");
+			giveFeedbackL.setToolTipText("Show 'Correct' or 'Incorrect' after each response.");
 			delayBetweenTrialsL = new JLabel("Delay Between Trials(ms):");
 			delayBetweenTrialsL.setToolTipText("Time in milliseconds to wait before displaying the"+
 													" next trial after a response is registered.");
@@ -294,7 +301,9 @@ public class DetailsBox extends JPanel
 	
 	private static class TrialModel
 	{
-		static JFormattedTextField name, trialType, correctKey; //TODO: Change trialType to a combo box.
+		static JFormattedTextField name; //TODO: Change trialType to a combo box.
+		static JComboBox trialType;
+		static JComboBox correctKey;
 		static JCheckBox randomizeDisplayOrder;
 		static JLabel nameL,trialTypeL,correctKeyL,
 						randomizeDisplayOrderL;
@@ -312,22 +321,21 @@ public class DetailsBox extends JPanel
 						t.name = val;
 				}});
 			name.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
-			trialType = new JFormattedTextField(t.trialType);
+			Experiment ex = GenLab.getInstance().builderP.builderExperiment;
+			trialType = new JComboBox(ex.trialTypes.toArray());
+			trialType.setEditable(false);
+			trialType.setSelectedItem(t.trialType);
 			trialType.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
-					String val = (String)trialType.getValue();
-					if (val != null && val != "")
-						t.trialType = val;
+						t.trialType = (String)trialType.getSelectedItem();
 				}});
-			trialType.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
-			correctKey = new JFormattedTextField(t.correctKey);
+			correctKey = new JComboBox(ex.usableKeys.toArray());
+			correctKey.setEditable(false);
+			correctKey.setSelectedItem(t.correctKey);
 			correctKey.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
-					String val = (String)correctKey.getValue();
-					if (val != null && val != "")
-						t.correctKey = val;
+					t.correctKey = (String)correctKey.getSelectedItem();
 				}});
-			correctKey.getDocument().addDocumentListener(refreshBuilderPDocumentListener);
 			randomizeDisplayOrder = new JCheckBox();
 			randomizeDisplayOrder.setSelected(t.randomizeDisplayOrder);
 			randomizeDisplayOrder.addActionListener(new ActionListener(){
@@ -364,31 +372,6 @@ public class DetailsBox extends JPanel
 		
 		static void setupDisplayView(Display displayToSetup){
 			d = displayToSetup;
-			displayType = new JComboBox(Display.DisplayType.values());
-			if (d.getDisplayType() != null)
-				displayType.setSelectedItem(d.getDisplayType());
-			displayType.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent arg0) {
-					DisplayType dt = (DisplayType)displayType.getSelectedItem();
-					d.setDisplayType(dt);
-					boolean hasPosition = !dt.equals(DisplayType.SOUND);
-					positionType.setEnabled(hasPosition);
-					positionX.setEnabled(hasPosition);
-					positionY.setEnabled(hasPosition);
-				}
-			});
-			positionType = new JComboBox(Display.PositionType.values());
-			if (d.getPositionType() != null)
-				positionType.setSelectedItem(d.getPositionType());
-			positionType.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent arg0) {
-					PositionType pt = (PositionType)positionType.getSelectedItem();
-					d.setPositionType(pt);
-					boolean exactLocation = pt.equals(PositionType.EXACT);
-					positionX.setEnabled(exactLocation);
-					positionY.setEnabled(exactLocation);
-				}
-			});
 			textOrPath = new JFormattedTextField(d.getTextOrPath());
 			textOrPath.addPropertyChangeListener(new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent arg0) {
@@ -440,7 +423,7 @@ public class DetailsBox extends JPanel
 				}
 			});
 			durationSecs = new JSpinner();
-			durationSecs.setModel(new SpinnerNumberModel(1000,1,Integer.MAX_VALUE,100));
+			durationSecs.setModel(new SpinnerNumberModel(1000.0,1.0,24 * 60 * 60000,100.0));
 			durationSecs.setValue(d.getDurationSecs() * 1000);
 			durationSecs.addChangeListener(new ChangeListener(){
 				public void stateChanged(ChangeEvent e) {
@@ -455,7 +438,35 @@ public class DetailsBox extends JPanel
 					d.setPersistTime((Double)persistTime.getValue() / 1000);
 				}
 			});
-			
+			positionType = new JComboBox(Display.PositionType.values());
+			positionType.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent arg0) {
+					PositionType pt = (PositionType)positionType.getSelectedItem();
+					d.setPositionType(pt);
+					boolean isExactLocation = pt.equals(PositionType.EXACT);
+					positionX.setEnabled(isExactLocation);
+					positionY.setEnabled(isExactLocation);
+				}
+			});
+			if (d.getPositionType() != null)
+				positionType.setSelectedItem(d.getPositionType());
+			displayType = new JComboBox(Display.DisplayType.values());
+			displayType.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent arg0) {
+					DisplayType dt = (DisplayType)displayType.getSelectedItem();
+					d.setDisplayType(dt);
+					boolean isSound = dt.equals(DisplayType.SOUND);
+					positionType.setEnabled(!isSound);
+					positionX.setEnabled(!isSound);
+					positionY.setEnabled(!isSound);
+					durationSecs.setEnabled(!isSound);
+					persistTime.setEnabled(!isSound);
+					randomOffsetX.setEnabled(!isSound);
+					randomOffsetY.setEnabled(!isSound);
+				}
+			});
+			if (d.getDisplayType() != null)
+				displayType.setSelectedItem(d.getDisplayType());
 			setupLabels();
 		}
 		private static void setupLabels(){
@@ -469,7 +480,7 @@ public class DetailsBox extends JPanel
 			positionXL.setToolTipText("");
 			positionYL = new JLabel("Y:");
 			positionYL.setToolTipText("");
-			randomOffsetXL = new JLabel("Randomness X:");
+			randomOffsetXL = new JLabel("Random Wiggle X:");
 			randomOffsetXL.setToolTipText("");
 			randomOffsetYL = new JLabel("Y:");
 			randomOffsetYL.setToolTipText("");
@@ -480,7 +491,7 @@ public class DetailsBox extends JPanel
 		}
 	}
 	
-	private void showExperimentView(Experiment ex)
+	private void showExperiment(Experiment ex)
 	{
 		ExperimentModel.setupExperimentView(ex);
 		MigLayout layout = new MigLayout("align center","[align right][align left,grow]","[]");
@@ -493,8 +504,6 @@ public class DetailsBox extends JPanel
 		this.add(ExperimentModel.usableKeys,"wrap");
 		this.add(ExperimentModel.randomizeBlockOrderL, "");
 		this.add(ExperimentModel.randomizeBlockOrder, "wrap");
-		this.add(ExperimentModel.giveFeedbackL, "");
-		this.add(ExperimentModel.giveFeedback, "wrap");
 		this.add(ExperimentModel.includeAllLettersL, "");
 		this.add(ExperimentModel.includeAllLetters, "wrap");
 		this.add(ExperimentModel.includeAllNumbersL, "");
@@ -502,7 +511,7 @@ public class DetailsBox extends JPanel
 		
 	}
 	
-	private void showBlockView(Block b) {
+	private void showBlock(Block b) {
 		BlockModel.setupBlockView(b);
 		MigLayout layout = new MigLayout("align center","[align right][align left,grow]","[]");
 		this.setLayout(layout);
@@ -512,6 +521,8 @@ public class DetailsBox extends JPanel
 		this.add(BlockModel.blockPrompt,"wrap");
 		this.add(BlockModel.repsL,"");	
 		this.add(BlockModel.reps,"wrap");	
+		this.add(BlockModel.giveFeedbackL, "");
+		this.add(BlockModel.giveFeedback, "wrap");
 		this.add(BlockModel.randomizeTrialOrderL,"");
 		this.add(BlockModel.randomizeTrialOrder,"wrap");
 		this.add(BlockModel.delayBetweenTrialsL,"");
@@ -568,10 +579,10 @@ public class DetailsBox extends JPanel
 		this.removeAll();
 		if (item instanceof Experiment) {
 			Experiment ex = (Experiment) item;
-			showExperimentView(ex);
+			showExperiment(ex);
 		} else if (item instanceof Block) {
 			Block b = (Block) item;
-			showBlockView(b);
+			showBlock(b);
 		} else if (item instanceof Trial) {
 			Trial t = (Trial) item;
 			showTrial(t);

@@ -200,7 +200,7 @@ public class GenLab extends JApplet implements ComponentListener {
 					vVal = -2;
 				}
 
-				if (getExperiment().giveFeedback) {
+				if (currBlock.giveFeedback) {
 					runP.feedbackJL.setText("");
 				}
 				//TODO : Move this functionality to runP.  Just pass in the display.
@@ -288,7 +288,7 @@ public class GenLab extends JApplet implements ComponentListener {
 				if (shouldDraw = !shouldDraw) {
 
 					if ((!getExperiment().includeAllLetters) && (!getExperiment().includeAllNumbers)
-							&& (getExperiment().giveFeedback)) {
+							&& (currBlock.giveFeedback)) {
 						if (keyStruck.equals(currTrial.correctKey)) {
 							runP.feedbackJL.setText("Correct");
 						} else {
@@ -506,36 +506,6 @@ public class GenLab extends JApplet implements ComponentListener {
 		}
 	}
 	
-	public boolean setupExperimentFromJson()
-	{
-		String filename = "";
-		JFileChooser jfc = new JFileChooser(".");
-		//File dir1 = new File(System.getProperty("user.dir"));
-		//jfc.setCurrentDirectory(dir1);
-		int userchoice = jfc.showOpenDialog(this);
-		if (userchoice == JFileChooser.APPROVE_OPTION){
-			filename = jfc.getSelectedFile().getAbsolutePath();
-		}
-		else
-		{
-			//TODO: Improve this error catch to JDialog for front end user
-			System.err.println("OOPS, failed on filechooser, no approve option.");
-			return false;
-		}
-		setExperiment(ExperimentUtilities.loadJsonExperiment(filename));
-		if (getExperiment() != null) 
-		{
-			prepRunPanel();
-			return true;
-		} 
-		else
-		{
-			//TODO: Remove this, as it should already be the case.
-			runP.startJB.setEnabled(false);
-			runP.startJB.setToolTipText("Error loading script from JSON.");
-			return false;
-		}
-	}
 
 
 	/**
@@ -604,6 +574,7 @@ public class GenLab extends JApplet implements ComponentListener {
 	 */
 	private void runExperiment() {
 		runningExperiment = true;
+		///Setup
 		initRunVariables();
 		runP.requestFocus();
 		runP.instructionsJB.setVisible(false);

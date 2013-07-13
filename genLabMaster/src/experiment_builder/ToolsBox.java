@@ -11,7 +11,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
+import core.ExperimentUtilities;
 import core.GenLab;
+import experiment.Experiment;
 
 public class ToolsBox extends JPanel
 {
@@ -95,10 +97,11 @@ public class ToolsBox extends JPanel
 		});	
 		openJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				boolean success = GenLab.getInstance().setupExperimentFromJson();
-				if (success)
+				Experiment newBuilderEx = ExperimentUtilities.loadJsonExperiment();
+				if (newBuilderEx != null)
 				{
-					GenLab.getInstance().builderP.loadPanel();
+					GenLab.getInstance().builderP.builderExperiment = newBuilderEx;
+					GenLab.getInstance().builderP.viewBox.doDefaultLayout(); //Refresh the view
 				}
 			}
 		});
@@ -124,16 +127,12 @@ public class ToolsBox extends JPanel
 				//TODO: Update to do soft save if builderP.hasBeenSaved.
 				boolean success = GenLab.getInstance().saveExperimentToJson();
 				if (!success) return;
-				success = GenLab.getInstance().setupExperimentFromJson();
-				if (!success) return;
 				GenLab.getInstance().switchToPanel(GenLab.getInstance().runP);
 			}
 		});	
 		launchJB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				JOptionPane.showMessageDialog(GenLab.getInstance(),
-						  "Not yet implemented.",
-						  "", JOptionPane.ERROR_MESSAGE);
+				GenLab.getInstance().setExperiment(GenLab.getInstance().builderP.builderExperiment);
 			}
 		});	
 	}

@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.sound.sampled.Clip;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
@@ -122,6 +123,25 @@ public class ExperimentUtilities {
 	}
 	
 	
+	public static Experiment loadJsonExperiment()
+	{
+		String filename = "";
+		JFileChooser jfc = new JFileChooser(".");
+		//File dir1 = new File(System.getProperty("user.dir"));
+		//jfc.setCurrentDirectory(dir1);
+		int userchoice = jfc.showOpenDialog(null);
+		if (userchoice == JFileChooser.APPROVE_OPTION){
+			filename = jfc.getSelectedFile().getAbsolutePath();
+		}
+		else
+		{
+			//TODO: Improve this error catch to JDialog for front end user
+			System.err.println("OOPS, failed on filechooser, no approve option.");
+			return null;
+		}
+		return ExperimentUtilities.loadJsonExperiment(filename);
+	}
+	
 	public static Experiment loadJsonExperiment(String filename)
 	{
 		ObjectMapper mapper = new ObjectMapper();
@@ -147,6 +167,11 @@ public class ExperimentUtilities {
 		}
 		//ex.directory = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator;
 		return ex;
+	}
+	
+	public static void experimentToJson(Experiment ex)
+	{
+		
 	}
 	
 	public static void experimentToJson(Experiment ex, String filename)
@@ -230,7 +255,7 @@ public class ExperimentUtilities {
 		else
 			block.blockPrompt = "";
 		
-		ex.giveFeedback = exptVarsP.getFeedback();
+		block.giveFeedback = exptVarsP.getFeedback();
 		try {
 			block.delayBetweenTrials = Integer.parseInt(exptVarsP.getDelay());
 			if (block.delayBetweenTrials < 0) {
@@ -501,6 +526,7 @@ public class ExperimentUtilities {
 		}
 		// Reorder trial vector if necessary
 		if (ex.blocks.get(0).randomizeTrialOrder) {
+			System.out.println("Did we shuffle?  " + ex.blocks.get(0).randomizeTrialOrder);
 			java.util.Collections.shuffle(trials);
 		}
 		// Setup trial boundaries and display orders
